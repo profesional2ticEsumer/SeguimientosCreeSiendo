@@ -1,0 +1,38 @@
+{
+  "dimensiones": [
+    "ingresos_empleo",
+    "salud_nutricion"
+  ],
+  "fecha": "2000-01-01",
+  "hora": "17:30",
+  "objetivo": "prueba",
+  "aspectos_abordados": "prueba 2|",
+  "avances": "prueba avances",
+  "retos": "retos a superar",
+  "oportunidades": "pruebas de desarrollo",
+  "compromisos": [
+    {
+      "descripcion": "comprometidos",
+      "responsable": "santiago",
+      "fecha": "2001-01-01"
+    },
+    {
+      "descripcion": "comprometidos 2",
+      "responsable": "santiago",
+      "fecha": "2025-12-02"
+    }
+  ],
+  "participantes": [
+    {
+      "nombre": "santiago",
+      "rol": "padre",
+      "firma": "santiago rv"
+    },
+    {
+      "nombre": "santiago",
+      "rol": "hijo",
+      "firma": "santiago rv"
+    }
+  ],
+  "comentarios": []
+}

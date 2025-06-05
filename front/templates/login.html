@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+    
+    <div class="login-container">
+        <img src="/static/img/logoLogin.png" alt="Logo" class="logo-login">
+
+        <h3>Seguimiento CreeSiendo</h3><br>
+
+        <form action="/login" method="post">
+            <label for="username">Usuario:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Contraseña:</label>
+            <div class="password-container">
+                <input type="password" id="password" name="password" required>
+                <span class="toggle-password" onclick="togglePassword()">👁️</span>
+            </div>
+            
+            <button type="submit">Entrar</button>
+        </form>
+
+        <!-- <% if (typeof error !== 'undefined' && error === '1') { %>
+            <div class="error">Usuario o contraseña incorrectos</div>
+        <% } %> -->
+        <div class="error" id="error-message" style="display: none;">Usuario o contraseña incorrectos</div>
+    </div>
+    
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        }
+
+        // Verificar si hay error en la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error') === '1') {
+            document.getElementById('error-message').style.display = 'block';
+        }
+
+        // Limpiar el parámetro de error de la URL sin recargar
+        if (window.history.replaceState && urlParams.get('error')) {
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
+    </script>
+   
+</body>
+</html>

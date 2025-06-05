@@ -1,0 +1,107 @@
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <style>
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .enviado {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .pendiente {
+            background-color: #f44336;
+            color: white;
+        }
+        .seguimiento-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .seguimientos-container {
+            margin-left: 20px;
+            display: none;
+        }
+        .family-card {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        .family-card h3 {
+            margin: 0;
+            cursor: pointer;
+        }
+        .toggle-seguimientos {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .toggle-seguimientos:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header"><h2>Bienvenido, {{ user }}</h2></div>
+        
+        <div class="seguimiento">
+            <form action="/create-document" method="post">
+                <label>Registrar cédula (cabeza de hogar):</label>
+                <input type="text" name="doc_number" required>
+                <br><button type="submit" class="btn">Crear carpeta</button>
+            </form>
+            <br>
+
+            <label>Familias registradas</label>
+            <div class="seguimiento-list">
+                {% for doc in documents %}
+                    <div class="family-card" data-doc="{{ doc.doc_number }}">
+                        <h3>
+                            <a href="#" class="toggle-seguimientos" data-doc="{{ doc.doc_number }}">{{ doc.doc_number }}</a>
+                        </h3>
+                        <br>
+
+                        <div class="seguimientos-container">
+                            {% for seg in doc.seguimientos %}
+                                <div class="seguimiento-item">
+                                    <a href="/document/{{ doc.doc_number }}/{{ seg.numero }}">
+                                        Seguimiento {{ seg.numero }}
+                                        <span class="status-badge {{ 'enviado' if seg.enviado else 'pendiente' }}">
+                                            {{ 'Registrado' if seg.enviado else 'Pendiente' }}
+                                        </span>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <form action="/logout" method="post">
+            <button type="submit" class="btn">Cerrar sesión</button>
+        </form>
+    </div>
+
+    <script>
+        // Mostrar/Ocultar seguimientos al hacer clic en el número de documento
+        document.querySelectorAll('.toggle-seguimientos').forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();  // Evita redirección
+                const card = this.closest('.family-card');
+                const container = card.querySelector('.seguimientos-container');
+
+                container.style.display = (container.style.display === 'block') ? 'none' : 'block';
+            });
+        });
+    </script>
+</body>
+</html>
