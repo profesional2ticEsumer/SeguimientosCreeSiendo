@@ -34,6 +34,7 @@ async def dashboard(request: Request):
                     seg_path = doc_dir / item
                     enviado = (seg_path / "seguimiento.json").exists()
                     seguimientos.append({
+                        "id": item,
                         "numero": seg_num,
                         "enviado": enviado
                     })

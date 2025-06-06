@@ -161,3 +161,16 @@ li {
     max-height: 400px;
     overflow-y: auto;
 }
+
+.seguimiento-list a {
+    text-decoration: none;
+    color: #3498db;
+}
+
+.seguimiento-list a:hover {
+    color: #27ae60;
+}
+
+.seguimiento-item a {
+    color: #34495e;
+}
