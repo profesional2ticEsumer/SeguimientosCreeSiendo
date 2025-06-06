@@ -115,18 +115,33 @@ async def view_document(request: Request, doc_number: str):
         "seguimientos": seguimientos
     })
 
-# Los demás endpoints (create-document, add-comment, etc.) se mantienen igual
+
+@router.post("/crear")
+async def crear_documento(request: Request, doc_id: str):
+    require_auth(request)
+    create_document_structure(doc_id, request)
+    return {"message": "Estructura de documento creada"}
 
 @router.post("/create-document")
 async def create_document(doc_number: str = Form(...), request: Request = None):
     require_auth(request)
 
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}"
+    user_id = request.cookies.get("user")
+    if not user_id:
+        raise HTTPException(status_code=403, detail="Usuario no autenticado")
+
+    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}_{user_id}"
+    
     if doc_path.exists():
         raise HTTPException(status_code=400, detail="El documento ya existe")
 
-    create_document_structure(doc_number)
-    return RedirectResponse(url=f"/document/{doc_number}", status_code=302)
+    # Crear estructura pasando el doc_number original (sin user_id) y el request
+    create_document_structure(doc_number, request)
+
+    # Redirige usando el nombre completo
+    full_doc_id = f"{doc_number}_{user_id}"
+    return RedirectResponse(url=f"/document/{full_doc_id}", status_code=302)
+
 
 @router.get("/document/{doc_number}", response_class=HTMLResponse)
 async def view_document(request: Request, doc_number: str):
@@ -212,21 +227,3 @@ async def get_seguimiento_data(doc_number: str, seguimiento_num: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al leer el archivo: {str(e)}")
     
-@router.get("/seguimiento/{doc_number}/{numero_seguimiento}")
-def ver_seguimiento(doc_number: str, numero_seguimiento: int):
-    seguimiento = obtener_seguimiento(doc_number, numero_seguimiento)  # Tu lógica aquí
-
-    if seguimiento and seguimiento.estado == "rechazado":
-        return templates.TemplateResponse("seguimiento.html", {
-            "seguimiento": None,
-            "doc_number": doc_number,
-            "numero_seguimiento": numero_seguimiento,
-            "estado": "rechazado"
-        })
-    else:
-        return templates.TemplateResponse("seguimiento.html", {
-            "seguimiento": seguimiento,
-            "doc_number": doc_number,
-            "numero_seguimiento": numero_seguimiento,
-            "estado": "activo"
-        })    

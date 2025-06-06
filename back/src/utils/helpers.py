@@ -6,27 +6,33 @@ import json
 DOCUMENTS_BASE_PATH = "documents"
 
 def is_authenticated(request: Request) -> bool:
-    return request.cookies.get("auth") == "true"
+    auth_value = request.cookies.get("auth")
+    print(f"Cookie 'auth': {auth_value}")  # Para depuración
+    return auth_value == "true"
 
 def require_auth(request: Request):
     if not is_authenticated(request):
-        raise HTTPException(status_code=401, detail="No autenticado")
+        raise HTTPException(status_code=401, detail="Usuario no autenticado")
 
-def create_document_structure(doc_number: str):
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}"
-    doc_path.mkdir(exist_ok=True)
+def create_document_structure(doc_number: str, request: Request):
+    user_id = request.cookies.get("user")
+    if not user_id:
+        raise HTTPException(status_code=400, detail="Usuario no especificado en cookies")
+
+    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}_{user_id}"
+    doc_path.mkdir(exist_ok=True, parents=True)
 
     for i in range(1, 9):
         seguimiento_path = doc_path / f"seguimiento_{i}"
         seguimiento_path.mkdir(exist_ok=True)
         (seguimiento_path / "imagenes").mkdir(exist_ok=True)
+
         comments_file = seguimiento_path / "comentarios.json"
         if not comments_file.exists():
             with open(comments_file, 'w', encoding='utf-8') as f:
                 json.dump([], f, ensure_ascii=False, indent=2)
-                
+
 def load_seguimiento_data(seguimiento_path: Path) -> Dict:
-    """Carga los datos de un seguimiento desde el archivo JSON"""
     data_file = seguimiento_path / "seguimiento.json"
     if data_file.exists():
         with open(data_file, 'r', encoding='utf-8') as f:
@@ -34,7 +40,6 @@ def load_seguimiento_data(seguimiento_path: Path) -> Dict:
     return {}
 
 def save_seguimiento_data(seguimiento_path: Path, data: Dict):
-    """Guarda los datos de un seguimiento en el archivo JSON"""
     data_file = seguimiento_path / "seguimiento.json"
     with open(data_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
