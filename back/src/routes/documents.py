@@ -78,36 +78,36 @@ async def save_seguimiento(
     
     return RedirectResponse(url=f"/document/{doc_number}", status_code=302)
 
-@router.get("/document/{doc_number}", response_class=HTMLResponse)
-async def view_document(request: Request, doc_number: str):
+@router.get("/document/{doc_number}/{follow_up}", response_class=HTMLResponse)
+async def view_document(request: Request, doc_number: str, follow_up: str):
     require_auth(request)
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}"
+    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}/{follow_up}"
     if not doc_path.exists():
         raise HTTPException(status_code=404, detail="Documento no encontrado")
 
     seguimientos = []
-    for i in range(1, 9):
-        seguimiento_path = doc_path / f"seguimiento_{i}"
-        imagenes = [f.name for f in (seguimiento_path / "imagenes").iterdir() if f.is_file()] if seguimiento_path.exists() else []
+    
+    seguimiento_path = doc_path
+    imagenes = [f.name for f in (seguimiento_path / "imagenes").iterdir() if f.is_file()] if seguimiento_path.exists() else []
         
-        # Cargar datos del seguimiento
-        seguimiento_data = load_seguimiento_data(seguimiento_path)
+    # Cargar datos del seguimiento
+    seguimiento_data = load_seguimiento_data(seguimiento_path)
         
-        seguimientos.append({
-            "numero": i,
-            "imagenes": imagenes,
-            "dimensiones": seguimiento_data.get("dimensiones", []),
-            "fecha": seguimiento_data.get("fecha", ""),
-            "hora": seguimiento_data.get("hora", ""),
-            "objetivo": seguimiento_data.get("objetivo", ""),
-            "aspectos": seguimiento_data.get("aspectos_abordados", ""),
-            "avances": seguimiento_data.get("avances", ""),
-            "retos": seguimiento_data.get("retos", ""),
-            "oportunidades": seguimiento_data.get("oportunidades", ""),
-            "compromisos": seguimiento_data.get("compromisos", []),
-            "participantes": seguimiento_data.get("participantes", []),
-            "comentarios": seguimiento_data.get("comentarios", [])
-        })
+    seguimientos.append({
+        "numero": follow_up.replace("seguimiento_", ""),
+        "imagenes": imagenes,
+        "dimensiones": seguimiento_data.get("dimensiones", []),
+        "fecha": seguimiento_data.get("fecha", ""),
+        "hora": seguimiento_data.get("hora", ""),
+        "objetivo": seguimiento_data.get("objetivo", ""),
+        "aspectos": seguimiento_data.get("aspectos_abordados", ""),
+        "avances": seguimiento_data.get("avances", ""),
+        "retos": seguimiento_data.get("retos", ""),
+        "oportunidades": seguimiento_data.get("oportunidades", ""),
+        "compromisos": seguimiento_data.get("compromisos", []),
+        "participantes": seguimiento_data.get("participantes", []),
+        "comentarios": seguimiento_data.get("comentarios", [])
+    })
 
     return templates.TemplateResponse("document.html", {
         "request": request,
