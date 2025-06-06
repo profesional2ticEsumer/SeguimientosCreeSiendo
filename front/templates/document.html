@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <title>Registro de Acompañamientos</title>
     <link rel="stylesheet" href="/static/css/document.css">
-    <!-- <script src="https://cdhtml2pdf.bundle.min.jsnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/"></script> -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-
-    
 </head>
 <body>
     <div class="container">
@@ -21,7 +17,7 @@
             <h2>Seguimiento {{ seguimiento.numero }}</h2>
 
             <!-- Formulario principal para guardar todos los datos -->
-            <form id="form-seguimiento-{{ seguimiento.numero }}" action="/save-seguimiento/{{ doc_number }}_{{doc_adviser}}/{{ seguimiento.id }}" method="post">
+            <form id="form-seguimiento-{{ seguimiento.numero }}" action="/save-seguimiento/{{ doc_number }}_{{ doc_adviser }}/seguimiento_{{ seguimiento.numero }}" method="post">
                 <!-- Dimensiones a Intervenir -->
                 <div class="filter-group">
                     <h3>Dimensiones a Intervenir</h3>
@@ -131,25 +127,60 @@
                         <img src="/image/{{ doc_number }}/{{ seguimiento.numero }}/{{ img }}" alt="Imagen del seguimiento">
                         {% endfor %}
                     </div>
-                    <form action="/upload-file/{{ doc_number }}/{{ seguimiento.numero }}" method="post" enctype="multipart/form-data">
-                        <input type="file" name="files" multiple>
-                        <button type="submit" class="btn btn-primary">Subir imágenes</button>
-                    </form>
+                    
                 </div>
 
                 <!-- Botón para guardar el seguimiento -->
                 <div class="form-group" style="text-align: center; margin-top: 30px;">
-                    <button type="submit" class="btn btn-primary">Guardar Seguimiento</button>
+                    <!-- Botón de guardar - actualizado -->
+                    <button type="submit" class="btn btn-primary" id="guardarBtn">
+                        <span id="submitText">Guardar Seguimiento</span>
+                    </button>
                     <!-- <button type="button" class="btn btn-export" onclick="exportToPDF('{{ doc_number }}', 'seguimiento_{{ seguimiento.numero }}')">Generar Informe</button> -->
                     <button type="button" class="btn btn-export" onclick="exportToPDF(this)">Generar Informe</button>
                 </div>
 
+            </form>
+            <form action="/upload-file/{{ doc_number }}/{{ seguimiento.numero }}" method="post" enctype="multipart/form-data">
+                        <input type="file" name="files" multiple>
+                        <button type="submit" class="btn btn-primary">Subir imágenes</button>
             </form>
         </div>
         {% endfor %}
     </div>
     <script src="/static/js/html2pdf.bundle.min.js"></script>
     <script>
+        // Función para agregar un nuevo compromiso
+        function agregarCompromiso(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const newRow = document.createElement('div');
+            newRow.className = 'compromiso-row';
+            newRow.innerHTML = `
+                <input type="text" name="compromisos_desc" placeholder="Compromiso">
+                <input type="text" name="compromisos_resp" placeholder="Responsable">
+                <input type="date" name="compromisos_fecha">
+                <button type="button" class="btn btn-secondary" onclick="this.parentNode.remove()">Eliminar</button>
+            `;
+            container.appendChild(newRow);
+        }
+
+        // Función para agregar un nuevo participante
+        function agregarParticipante(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const newRow = document.createElement('div');
+            newRow.className = 'participante-row';
+            newRow.innerHTML = `
+                <input type="text" name="participantes_nombre" placeholder="Nombre">
+                <input type="text" name="participantes_rol" placeholder="Rol">
+                <input type="text" name="participantes_firma" placeholder="Firma">
+                <button type="button" class="btn btn-secondary" onclick="this.parentNode.remove()">Eliminar</button>
+            `;
+            container.appendChild(newRow);
+        }
        async function exportToPDF(button) {
             try {
                 console.log('Iniciando generación de PDF...');

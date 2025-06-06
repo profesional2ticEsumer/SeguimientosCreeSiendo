@@ -1,7 +1,8 @@
+from itertools import zip_longest
 import os
-from typing import Dict, List
-from fastapi import APIRouter, Request, Form, HTTPException
-from fastapi.responses import RedirectResponse, HTMLResponse
+from typing import Dict, List, Union
+from fastapi import APIRouter, Request, Form, HTTPException, logger
+from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 import json
@@ -33,33 +34,42 @@ async def save_seguimiento(
     participantes_rol: List[str] = Form([]),
     participantes_firma: List[str] = Form([])
 ):
+    print(f"doc_number: '{doc_number}'")
+    print(f"doc_adviser: '{doc_adviser}'")
+    print(f"follow_up: '{follow_up}'")
+
+    # Limpiar posibles guiones bajos al final o espacios
+    doc_number = doc_number.strip('_').strip()
+    doc_adviser = doc_adviser.strip('_').strip()
+    follow_up = follow_up.strip('_').strip()
+
     require_auth(request)
-    
+
     doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}_{doc_adviser}"
-    seguimiento_path = doc_path / f"{follow_up}"
+    seguimiento_path = doc_path / follow_up
     seguimiento_path.mkdir(exist_ok=True)
-    
+
     # Procesar compromisos
     compromisos = []
     for desc, resp, fecha_comp in zip(compromisos_desc, compromisos_resp, compromisos_fecha):
-        if desc:  # Solo agregar si hay descripción
+        if desc:
             compromisos.append({
                 "descripcion": desc,
                 "responsable": resp,
                 "fecha": fecha_comp
             })
-    
+
     # Procesar participantes
     participantes = []
     for nombre, rol, firma in zip(participantes_nombre, participantes_rol, participantes_firma):
-        if nombre:  # Solo agregar si hay nombre
+        if nombre:
             participantes.append({
                 "nombre": nombre,
                 "rol": rol,
                 "firma": firma
             })
-    
-    # Crear estructura de datos
+
+    # Estructura de datos
     seguimiento_data = {
         "dimensiones": dimensiones,
         "fecha": fecha,
@@ -73,11 +83,12 @@ async def save_seguimiento(
         "participantes": participantes,
         "comentarios": load_seguimiento_data(seguimiento_path).get("comentarios", [])
     }
-    
-    # Guardar datos
+
+    # Guardar los datos
     save_seguimiento_data(seguimiento_path, seguimiento_data)
-    
-    return RedirectResponse(url=f"/document/{doc_number}", status_code=302)
+
+    # return RedirectResponse(url=f"/document/{doc_number}", status_code=302)
+    return RedirectResponse(url="/dashboard", status_code=302)
 
 @router.get("/document/{doc_number}/{follow_up}", response_class=HTMLResponse)
 async def view_document(request: Request, doc_number: str, follow_up: str):
