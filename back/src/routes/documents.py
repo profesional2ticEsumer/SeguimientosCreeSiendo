@@ -13,11 +13,12 @@ router = APIRouter()
 templates = Jinja2Templates(directory="../../front/templates")
 DOCUMENTS_BASE_PATH = "documents"
 
-@router.post("/save-seguimiento/{doc_number}_{doc_adviser}/{follow_up}")
+@router.post("/save-seguimiento/{folder}/{follow_up}")
 async def save_seguimiento(
     request: Request,
     doc_number: str,
     doc_adviser: str,
+    folder: str,
     follow_up: str,
     dimensiones: List[str] = Form([]),
     fecha: str = Form(...),
@@ -45,7 +46,7 @@ async def save_seguimiento(
 
     require_auth(request)
 
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}_{doc_adviser}"
+    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{folder}"
     seguimiento_path = doc_path / follow_up
     seguimiento_path.mkdir(exist_ok=True)
 
@@ -86,14 +87,16 @@ async def save_seguimiento(
 
     # Guardar los datos
     save_seguimiento_data(seguimiento_path, seguimiento_data)
+    
+    return RedirectResponse(url=f"/document/{folder}", status_code=302)
 
     # return RedirectResponse(url=f"/document/{doc_number}", status_code=302)
     return RedirectResponse(url="/dashboard", status_code=302)
 
-@router.get("/document/{doc_number}/{follow_up}", response_class=HTMLResponse)
-async def view_document(request: Request, doc_number: str, follow_up: str):
+@router.get("/document/{folder}/{follow_up}", response_class=HTMLResponse)
+async def view_document(request: Request, folder: str, follow_up: str):
     require_auth(request)
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}/{follow_up}"
+    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{folder}/{follow_up}"
     if not doc_path.exists():
         raise HTTPException(status_code=404, detail="Documento no encontrado")
 
@@ -123,13 +126,13 @@ async def view_document(request: Request, doc_number: str, follow_up: str):
 
     return templates.TemplateResponse("document.html", {
         "request": request,
-        "doc_number": doc_number,
+        "folder": folder,
         "seguimientos": seguimientos
     })
 
 
-@router.post("/crear")
-async def crear_documento(request: Request, doc_id: str):
+# @router.post("/crear")
+# async def crear_documento(request: Request, doc_id: str):
     require_auth(request)
     create_document_structure(doc_id, request)
     return {"message": "Estructura de documento creada"}
@@ -152,38 +155,7 @@ async def create_document(doc_number: str = Form(...), request: Request = None):
 
     # Redirige usando el nombre completo
     full_doc_id = f"{doc_number}_{user_id}"
-    return RedirectResponse(url=f"/document/{full_doc_id}", status_code=302)
-
-
-# @router.get("/document/{doc_number}", response_class=HTMLResponse)
-# async def view_document(request: Request, doc_number: str):
-    require_auth(request)
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}"
-    if not doc_path.exists():
-        raise HTTPException(status_code=404, detail="Documento no encontrado")
-
-    seguimientos = []
-    for i in range(1, 9):
-        seguimiento_path = doc_path / f"seguimiento_{i}"
-        imagenes = [f.name for f in (seguimiento_path / "imagenes").iterdir() if f.is_file()] if seguimiento_path.exists() else []
-        comentarios = []
-
-        comments_file = seguimiento_path / "comentarios.json"
-        if comments_file.exists():
-            with open(comments_file, 'r', encoding='utf-8') as f:
-                comentarios = json.load(f)
-
-        seguimientos.append({
-            "numero": i,
-            "imagenes": imagenes,
-            "comentarios": comentarios
-        })
-
-    return templates.TemplateResponse("document.html", {
-        "request": request,
-        "doc_number": doc_number,
-        "seguimientos": seguimientos
-    })
+    return RedirectResponse(url=f"/document/{full_doc_id}/seguimiento_1", status_code=302)
 
 @router.post("/add-comment/{doc_number}/{seguimiento_num}")
 async def add_comment(request: Request, doc_number: str, seguimiento_num: int, comentario: str = Form(...)):
