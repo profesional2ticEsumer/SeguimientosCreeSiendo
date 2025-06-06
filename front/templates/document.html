@@ -21,7 +21,7 @@
             <h2>Seguimiento {{ seguimiento.numero }}</h2>
 
             <!-- Formulario principal para guardar todos los datos -->
-            <form id="form-seguimiento-{{ seguimiento.numero }}" action="/save-seguimiento/{{ doc_number }}/{{ seguimiento.numero }}" method="post">
+            <form id="form-seguimiento-{{ seguimiento.numero }}" action="/save-seguimiento/{{ doc_number }}_{{doc_adviser}}/{{ seguimiento.id }}" method="post">
                 <!-- Dimensiones a Intervenir -->
                 <div class="filter-group">
                     <h3>Dimensiones a Intervenir</h3>

@@ -12,11 +12,12 @@ router = APIRouter()
 templates = Jinja2Templates(directory="../../front/templates")
 DOCUMENTS_BASE_PATH = "documents"
 
-@router.post("/save-seguimiento/{doc_number}/{seguimiento_num}")
+@router.post("/save-seguimiento/{doc_number}_{doc_adviser}/{follow_up}")
 async def save_seguimiento(
     request: Request,
     doc_number: str,
-    seguimiento_num: int,
+    doc_adviser: str,
+    follow_up: str,
     dimensiones: List[str] = Form([]),
     fecha: str = Form(...),
     hora: str = Form(...),
@@ -34,8 +35,8 @@ async def save_seguimiento(
 ):
     require_auth(request)
     
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}"
-    seguimiento_path = doc_path / f"seguimiento_{seguimiento_num}"
+    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}_{doc_adviser}"
+    seguimiento_path = doc_path / f"{follow_up}"
     seguimiento_path.mkdir(exist_ok=True)
     
     # Procesar compromisos
@@ -143,8 +144,8 @@ async def create_document(doc_number: str = Form(...), request: Request = None):
     return RedirectResponse(url=f"/document/{full_doc_id}", status_code=302)
 
 
-@router.get("/document/{doc_number}", response_class=HTMLResponse)
-async def view_document(request: Request, doc_number: str):
+# @router.get("/document/{doc_number}", response_class=HTMLResponse)
+# async def view_document(request: Request, doc_number: str):
     require_auth(request)
     doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}"
     if not doc_path.exists():

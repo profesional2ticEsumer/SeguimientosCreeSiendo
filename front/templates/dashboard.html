@@ -72,7 +72,7 @@
                         <div class="seguimientos-container">
                             {% for seg in doc.seguimientos %}
                                 <div class="seguimiento-item">
-                                    <a href="/document/{{ doc.doc_number }}/{{ seg.id }}">
+                                    <a href="/document/{{ doc.doc_number }}_{{doc.doc_adviser}}/{{ seg.id }}">
                                         Seguimiento {{ seg.numero }}
                                         <span class="status-badge {{ 'enviado' if seg.enviado else 'pendiente' }}">
                                             {{ 'Registrado' if seg.enviado else 'Pendiente' }}

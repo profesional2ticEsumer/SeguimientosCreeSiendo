@@ -25,7 +25,8 @@ async def dashboard(request: Request):
         if doc_dir.is_dir() and doc_dir.name.startswith("documento_") and doc_dir.name.endswith(f"_{user}"):
             # doc_number sin el prefijo y sin el sufijo del user
             base_name = doc_dir.name.replace("documento_", "")
-            doc_number = base_name.rsplit("_", 1)[0]  # quita solo el último _user
+            doc_number = base_name.rsplit("_", 1)[0]
+            doc_adviser = base_name.rsplit("_", 1)[1]
 
             seguimientos = []
             for item in os.listdir(doc_dir):
@@ -42,6 +43,7 @@ async def dashboard(request: Request):
             seguimientos.sort(key=lambda x: int(x["numero"]))
 
             documents.append({
+                "doc_adviser": doc_adviser,
                 "doc_number": doc_number,
                 "seguimientos": seguimientos
             })
