@@ -39,7 +39,48 @@ def load_seguimiento_data(seguimiento_path: Path) -> Dict:
             return json.load(f)
     return {}
 
-def save_seguimiento_data(seguimiento_path: Path, data: Dict):
-    data_file = seguimiento_path / "seguimiento.json"
-    with open(data_file, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def save_seguimiento_data(seguimiento_path: Path, data: Dict) -> bool:
+    """
+    Guarda los datos de seguimiento en un archivo JSON de forma segura.
+    
+    Args:
+        seguimiento_path: Ruta al directorio donde se guardará el archivo
+        data: Diccionario con los datos a guardar
+        
+    Returns:
+        bool: True si se guardó correctamente, False si hubo error
+        
+    Raises:
+        OSError: Si hay problemas con el sistema de archivos
+        TypeError: Si los datos no son serializables a JSON
+    """
+    try:
+        # Crear el directorio si no existe
+        seguimiento_path.mkdir(parents=True, exist_ok=True)
+        
+        # Definir la ruta del archivo
+        data_file = seguimiento_path / "seguimiento.json"
+        
+        # Guardar en archivo temporal primero (patrón atómico)
+        temp_file = seguimiento_path / "seguimiento.tmp"
+        
+        with open(temp_file, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        # Renombrar el archivo temporal al nombre final (operación atómica)
+        temp_file.replace(data_file)
+        
+        return True
+        
+    except json.JSONEncodeError as e:
+        raise TypeError(f"Los datos no son serializables a JSON: {str(e)}")
+    except OSError as e:
+        raise OSError(f"No se pudo guardar el archivo: {str(e)}")
+    except Exception as e:
+        raise Exception(f"Error inesperado al guardar: {str(e)}")
+
+# def save_seguimiento_data(seguimiento_path: Path, data: Dict):
+#     data_file = seguimiento_path / "seguimiento.json"
+#     with open(data_file, 'w', encoding='utf-8') as f:
+#         json.dump(data, f, ensure_ascii=False, indent=2)

@@ -48,9 +48,10 @@ async def dashboard(request: Request):
                 "seguimientos": seguimientos
             })
 
-    return templates.TemplateResponse("dashboard.html", {
+    return templates.TemplateResponse("index.html", {
         "request": request,
         "user": user,
-        "documents": documents
+        "documents": documents,
+        "seguimientos": seguimientos
     })
 

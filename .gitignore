@@ -4,4 +4,4 @@ venv
 .env
 .env.local
 
-documento_*
+documento_*/

@@ -8,154 +8,129 @@ from pathlib import Path
 import json
 from datetime import datetime
 from utils.helpers import require_auth, create_document_structure, load_seguimiento_data, save_seguimiento_data
+from models.seguimiento import SeguimientoResponse, Compromiso, Participante
+from models.save_seguimiento import SeguimientoData
+from models.documents import DocumentCreate
 
 router = APIRouter()
 templates = Jinja2Templates(directory="../../front/templates")
 DOCUMENTS_BASE_PATH = "documents"
 
-@router.post("/save-seguimiento/{folder}/{follow_up}")
-async def save_seguimiento(
-    request: Request,
-    doc_number: str,
-    doc_adviser: str,
-    folder: str,
-    follow_up: str,
-    dimensiones: List[str] = Form([]),
-    fecha: str = Form(...),
-    hora: str = Form(...),
-    objetivo: str = Form(...),
-    aspectos_abordados: str = Form(...),
-    avances: str = Form(...),
-    retos: str = Form(...),
-    oportunidades: str = Form(...),
-    compromisos_desc: List[str] = Form([]),
-    compromisos_resp: List[str] = Form([]),
-    compromisos_fecha: List[str] = Form([]),
-    participantes_nombre: List[str] = Form([]),
-    participantes_rol: List[str] = Form([]),
-    participantes_firma: List[str] = Form([])
-):
-    print(f"doc_number: '{doc_number}'")
-    print(f"doc_adviser: '{doc_adviser}'")
-    print(f"follow_up: '{follow_up}'")
-
-    # Limpiar posibles guiones bajos al final o espacios
-    doc_number = doc_number.strip('_').strip()
-    doc_adviser = doc_adviser.strip('_').strip()
-    follow_up = follow_up.strip('_').strip()
-
+@router.get("/get-seguimiento/{folder}/{follow_up}", response_model= SeguimientoResponse)
+async def get_seguimiento(folder: str, follow_up: str, request: Request):
+    """Obtiene los datos de un seguimiento específico"""
     require_auth(request)
 
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{folder}"
-    seguimiento_path = doc_path / follow_up
-    seguimiento_path.mkdir(exist_ok=True)
-
-    # Procesar compromisos
-    compromisos = []
-    for desc, resp, fecha_comp in zip(compromisos_desc, compromisos_resp, compromisos_fecha):
-        if desc:
-            compromisos.append({
-                "descripcion": desc,
-                "responsable": resp,
-                "fecha": fecha_comp
-            })
-
-    # Procesar participantes
-    participantes = []
-    for nombre, rol, firma in zip(participantes_nombre, participantes_rol, participantes_firma):
-        if nombre:
-            participantes.append({
-                "nombre": nombre,
-                "rol": rol,
-                "firma": firma
-            })
-
-    # Estructura de datos
-    seguimiento_data = {
-        "dimensiones": dimensiones,
-        "fecha": fecha,
-        "hora": hora,
-        "objetivo": objetivo,
-        "aspectos_abordados": aspectos_abordados,
-        "avances": avances,
-        "retos": retos,
-        "oportunidades": oportunidades,
-        "compromisos": compromisos,
-        "participantes": participantes,
-        "comentarios": load_seguimiento_data(seguimiento_path).get("comentarios", [])
-    }
-
-    # Guardar los datos
-    save_seguimiento_data(seguimiento_path, seguimiento_data)
-    
-    return RedirectResponse(url=f"/document/{folder}", status_code=302)
-
-    # return RedirectResponse(url=f"/document/{doc_number}", status_code=302)
-    return RedirectResponse(url="/dashboard", status_code=302)
-
-@router.get("/document/{folder}/{follow_up}", response_class=HTMLResponse)
-async def view_document(request: Request, folder: str, follow_up: str):
-    require_auth(request)
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{folder}/{follow_up}"
+    doc_path = Path(DOCUMENTS_BASE_PATH) / f"{folder}/{follow_up}"
     if not doc_path.exists():
         raise HTTPException(status_code=404, detail="Documento no encontrado")
-
-    seguimientos = []
     
     seguimiento_path = doc_path
     imagenes = [f.name for f in (seguimiento_path / "imagenes").iterdir() if f.is_file()] if seguimiento_path.exists() else []
         
     # Cargar datos del seguimiento
     seguimiento_data = load_seguimiento_data(seguimiento_path)
+
+    # Convertir compromisos
+    compromisos = [
+        Compromiso(
+            descripcion=c["descripcion"],
+            fecha_cumplimiento=c["fecha_cumplimiento"],
+            responsable=c["responsable"]
+        ) for c in seguimiento_data.get("compromisos", [])
+    ]
+    
+    # Convertir participantes
+    participantes = [
+        Participante(
+            nombre=p["nombre"],
+            rol=p["rol"]
+        ) for p in seguimiento_data.get("participantes", [])
+    ]
+    
+    # Convertir comentarios
+    comentarios = [
+        Comentario(
+            autor=c["autor"],
+            contenido=c["contenido"],
+            fecha=c["fecha"]
+        ) for c in seguimiento_data.get("comentarios", [])
+    ]
         
-    seguimientos.append({
-        "numero": follow_up.replace("seguimiento_", ""),
-        "imagenes": imagenes,
-        "dimensiones": seguimiento_data.get("dimensiones", []),
-        "fecha": seguimiento_data.get("fecha", ""),
-        "hora": seguimiento_data.get("hora", ""),
-        "objetivo": seguimiento_data.get("objetivo", ""),
-        "aspectos": seguimiento_data.get("aspectos_abordados", ""),
-        "avances": seguimiento_data.get("avances", ""),
-        "retos": seguimiento_data.get("retos", ""),
-        "oportunidades": seguimiento_data.get("oportunidades", ""),
-        "compromisos": seguimiento_data.get("compromisos", []),
-        "participantes": seguimiento_data.get("participantes", []),
-        "comentarios": seguimiento_data.get("comentarios", [])
-    })
-
-    return templates.TemplateResponse("document.html", {
-        "request": request,
-        "folder": folder,
-        "seguimientos": seguimientos
-    })
-
-
-# @router.post("/crear")
-# async def crear_documento(request: Request, doc_id: str):
-    require_auth(request)
-    create_document_structure(doc_id, request)
-    return {"message": "Estructura de documento creada"}
+    return SeguimientoResponse(
+        numero=follow_up.replace("seguimiento_", ""),
+        imagenes=imagenes,
+        dimensiones=seguimiento_data.get("dimensiones", []),
+        fecha=seguimiento_data.get("fecha"),
+        hora=seguimiento_data.get("hora"),
+        objetivo=seguimiento_data.get("objetivo"),
+        aspectos=seguimiento_data.get("aspectos_abordados"),
+        avances=seguimiento_data.get("avances"),
+        retos=seguimiento_data.get("retos"),
+        oportunidades=seguimiento_data.get("oportunidades"),
+        compromisos=compromisos,
+        participantes=participantes,
+        comentarios=comentarios
+    )
 
 @router.post("/create-document")
-async def create_document(doc_number: str = Form(...), request: Request = None):
+async def create_document(document_data: DocumentCreate, request: Request):
     require_auth(request)
-
     user_id = request.cookies.get("user")
     if not user_id:
         raise HTTPException(status_code=403, detail="Usuario no autenticado")
-
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}_{user_id}"
     
+    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{document_data.doc_number}_{user_id}"
     if doc_path.exists():
         raise HTTPException(status_code=400, detail="El documento ya existe")
+    
+    # Crear estructura pasando el doc_number original y el request
+    create_document_structure(document_data.doc_number, request)
+    
+    # Devolver respuesta JSON en lugar de redirección
+    full_doc_id = f"{document_data.doc_number}_{user_id}"
+    return {
+        "success": True,
+        "message": "Documento creado exitosamente",
+        "doc_number": document_data.doc_number,
+        "full_doc_id": full_doc_id,
+        "redirect_url": f"/document/{full_doc_id}/seguimiento_1"
+    }
 
-    # Crear estructura pasando el doc_number original (sin user_id) y el request
-    create_document_structure(doc_number, request)
+@router.post("/save-seguimiento/{folder}/{follow_up}")
+async def save_seguimiento(
+    folder: str,
+    follow_up: str,
+    data: SeguimientoData,
+    request: Request
+):
+    """Guarda los datos de un seguimiento"""
+    require_auth(request)
+    user_id = request.cookies.get("user")
 
-    # Redirige usando el nombre completo
-    full_doc_id = f"{doc_number}_{user_id}"
-    return RedirectResponse(url=f"/document/{full_doc_id}/seguimiento_1", status_code=302)
+    if not user_id:
+        raise HTTPException(status_code=403, detail="Usuario no autenticado")
+    
+    seguimiento_path = Path(DOCUMENTS_BASE_PATH) / f"{folder}/{follow_up}"
+    if not seguimiento_path.exists():
+        raise HTTPException(status_code=404, detail="Seguimiento no encontrado")
+
+    # Cargar datos del seguimiento existente
+    seguimiento_data = data.dict()
+
+    # Guardar datos del seguimiento
+    save_seguimiento_data(seguimiento_path, seguimiento_data)
+    
+    # Determinar el siguiente seguimiento
+    next_seguimiento = int(follow_up.replace("seguimiento_", "")) + 1
+    max_seguimientos = 8  # Número total de seguimientos
+    
+    return {
+        "success": True,
+        "next_seguimiento": next_seguimiento if next_seguimiento <= max_seguimientos else None,
+        "message": "Datos guardados exitosamente"
+    }
+
 
 @router.post("/add-comment/{doc_number}/{seguimiento_num}")
 async def add_comment(request: Request, doc_number: str, seguimiento_num: int, comentario: str = Form(...)):

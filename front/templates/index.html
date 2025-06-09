@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Registro de Acompañamientos</title>
+  <link rel="stylesheet" href="/static/css/index.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Sistema de Registro de Acompañamientos</h1>
+      <p>Gestión integral de seguimientos familiares - Usuario: 1001</p>
+    </div>
+
+    <div class="main-content">
+      <div class="sidebar">
+        <h2>Familias Registradas</h2>
+
+        {% for doc in documents %}
+        {% set familia = doc.doc_number %}
+        {% set entrevistador = doc.doc_adviser %}
+        <div class="family-section">
+          <div class="family-id" onclick="toggleFollowUps('{{ familia }}', '{{ entrevistador }}')">
+            📋 {{ doc.doc_number }}
+          </div>
+          <div class="follow-up-list" id="{{ familia }}">
+            {% for seg in doc.seguimientos %}
+            {% set estado = 'completed' if seg.enviado else 'pending' %}
+            {% set texto_estado = 'Completado' if seg.enviado else 'Pendiente' %}
+            <div class="follow-up-item {{ estado }}">
+              <span>Seguimiento {{ seg.numero }}</span>
+              <span class="status-badge status-{{estado}}">{{ texto_estado }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+
+        <button class="add-button" onclick="createNewFamily()">
+          ➕ Crear Nueva Familia
+        </button>
+      </div>
+
+      <div class="form-container">
+        <div class="form-header">
+          <div>
+            <h2 class="form-title">Registro de Acompañamiento</h2>
+            <p class="form-subtitle">Seguimiento # - Familia #</p>
+          </div>
+          <div class="step-indicator">
+            {% for seg in seguimientos %}
+            <span class="progress-step"></span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <form class="form-grid">
+          <div class="form-section">
+            <div class="section-title">
+              🎯 Dimensiones a Intervenir
+            </div>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="ingresos">
+                <label for="ingresos">Ingresos y empleo</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="salud">
+                <label for="salud">Salud y nutrición</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="educacion">
+                <label for="educacion">Educación</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="vivienda">
+                <label for="vivienda">Vivienda digna</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="justicia">
+                <label for="justicia">Acceso a la justicia</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="dinamica">
+                <label for="dinamica">Dinámica familiar</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="section-title">
+              📅 Información de la Visita
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" id="fecha" name="fecha">
+              </div>
+              <div class="form-group">
+                <label for="hora">Hora</label>
+                <input type="time" id="hora" name="hora">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="section-title">
+              📝 Detalles del Acompañamiento
+            </div>
+            <div class="form-group">
+              <label for="objetivo">Objetivo del acompañamiento</label>
+              <textarea id="objetivo" name="objetivo"
+                placeholder="Describe el objetivo principal de esta visita..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="aspectos">Principales aspectos abordados</label>
+              <textarea id="aspectos" name="aspectos"
+                placeholder="Detalla los temas y aspectos principales tratados durante la visita..."></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="avances">Avances evidenciados</label>
+                <textarea id="avances" name="avances" placeholder="Describe los avances observados..."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="retos">Retos por superar</label>
+                <textarea id="retos" name="retos" placeholder="Identifica los desafíos pendientes..."></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="oportunidades">Desarrollo o ampliación de oportunidades</label>
+              <textarea id="oportunidades" name="oportunidades"
+                placeholder="Menciona las oportunidades identificadas o desarrolladas..."></textarea>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="section-title">
+              🤝 Compromisos
+            </div>
+            <div class="dynamic-section" id="compromisos">
+              <div class="form-group">
+                <label>Compromiso 1</label>
+                <textarea placeholder="Describe el compromiso adquirido..."></textarea>
+                <input type="date" placeholder="Fecha de cumplimiento" required>
+                <input type="text" placeholder="Responsable del compromiso" required>
+              </div>
+            </div>
+            <button type="button" class="add-button" onclick="addCompromiso()">
+              ➕ Añadir Compromiso
+            </button>
+          </div>
+
+          <div class="form-section">
+            <div class="section-title">
+              👨‍👩‍👧‍👦 Participantes de la Familia
+            </div>
+            <div class="dynamic-section" id="participantes">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Nombre del participante</label>
+                  <input type="text" placeholder="Nombre completo">
+                </div>
+                <div class="form-group">
+                  <label>Rol en la familia</label>
+                  <input type="text" placeholder="Padre, madre, hijo/a, etc.">
+                </div>
+              </div>
+            </div>
+            <button type="button" class="add-button" onclick="addParticipante()">
+              ➕ Añadir Participante
+            </button>
+          </div>
+
+          <div class="upload-container">
+            <div class="upload-wrapper">
+              <div class="upload-header">
+                <label class="upload-label">Cargar Imágenes</label>
+                <div class="upload-counter">
+                  <span id="imageCount">0</span> imagen(es)
+                </div>
+              </div>
+
+              <div class="upload-area" id="uploadArea">
+                <input type="file" class="upload-input" id="imageInput" name="images[]" accept="image/*" multiple>
+
+                <div class="upload-icon">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                  </svg>
+                </div>
+
+                <div class="upload-text">Arrastra tus imágenes aquí</div>
+                <div class="upload-subtext">
+                  o haz clic para seleccionar múltiples archivos<br>
+                  <span style="font-size: 12px;">PNG, JPG, GIF hasta 5MB cada una</span>
+                </div>
+              </div>
+
+              <div class="images-grid" id="imagesGrid"></div>
+
+              <div class="empty-state" id="emptyState">
+                No hay imágenes cargadas. Arrastra o selecciona archivos para comenzar.
+              </div>
+
+              <button type="button" class="clear-all-btn" id="clearAllBtn" style="display: none;">
+                Eliminar todas las imágenes
+              </button>
+
+              <div class="error-message" id="errorMessage"></div>
+              <div class="success-message" id="successMessage"></div>
+            </div>
+          </div>
+        </form>
+
+        <div class="navigation">
+          <button type="button" class="nav-button btn-secondary">
+            ← Regresar
+          </button>
+
+          <div class="progress-indicator">
+            <span style="color: #64748b; font-weight: 600;">Paso 1 de 8</span>
+          </div>
+
+          <button type="button" class="nav-button btn-primary">
+            Guardar y Continuar →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <img class="modal-image" id="modalImage" alt="Vista previa">
+        </div>
+    </div>
+    
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/static/js/index.js"></script>
+  <script src="/static/js/control_images.js"></script>
+</body>
+
+</html>
