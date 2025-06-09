@@ -9,19 +9,23 @@ router = APIRouter()
 AUTHORIZED_USERS = {
     "administrador": {
         "password": "Esumer2025**",
-        "role": "admin"
+        "role": "admin",
+        "name":"administrador"
     },
     "1001": {
         "password": "Esumer2025**",
-        "role": "admin"
+        "role": "admin",
+        "name":"Usuario 1"
     },
     "1002": {
         "password": "Esumer2025**",
-        "role": "admin"
+        "role": "admin",
+        "name":"Usuario 2"
     },
     "1003": {
         "password": "Esumer2025**",
-        "role": "admin"
+        "role": "admin",
+        "name":"Usuario 3"
     }
 }
 
@@ -35,6 +39,8 @@ async def login(response: Response, username: str = Form(...), password: str = F
     response.set_cookie(key="auth", value="true", max_age=3600, httponly=False)
     response.set_cookie(key="user", value=username, max_age=3600, httponly=False)
     response.set_cookie(key="role", value=user_data["role"], max_age=3600, httponly=False)
+    response.set_cookie(key="name", value=user_data["name"], max_age=3600, httponly=False)  # <- ESTA LÍNEA ES NUEVA
+
     return response
 
 @router.post("/logout")
@@ -43,4 +49,5 @@ async def logout(request: Request, response: Response):
     response.delete_cookie("auth")
     response.delete_cookie("user")
     response.delete_cookie("role")
+    response.delete_cookie("name")
     return response

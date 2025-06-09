@@ -257,19 +257,16 @@ class MultiImageUpload {
 // Inicializar el uploader
 const imageUploader = new MultiImageUpload();
 
-// Ejemplo de cómo usar los datos en un formulario
-function submitForm() {
-  const formData = imageUploader.getFormData();
-  
-  // Agregar otros campos del formulario si es necesario
-  formData.append('other_field', 'value');
-  
-  // Enviar con fetch
-  fetch('/your-endpoint', {
-      method: 'POST',
-      body: formData
-  })
-  .then(response => response.json())
-  .then(data => console.log('Success:', data))
-  .catch(error => console.error('Error:', error));
-}
+// Verifica el estado del input de imágenes
+document.getElementById('imageInput').addEventListener('change', function(e) {
+    console.log('Cambio en input de imágenes. Archivos seleccionados:', e.target.files);
+    
+    // Verifica que los archivos se estén capturando correctamente
+    if (e.target.files.length > 0) {
+        console.log('Detalles del primer archivo:', {
+            name: e.target.files[0].name,
+            size: e.target.files[0].size,
+            type: e.target.files[0].type
+        });
+    }
+});

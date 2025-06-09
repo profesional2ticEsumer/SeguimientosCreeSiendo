@@ -64,7 +64,7 @@ async def get_seguimiento(folder: str, follow_up: str, request: Request):
         fecha=seguimiento_data.get("fecha"),
         hora=seguimiento_data.get("hora"),
         objetivo=seguimiento_data.get("objetivo"),
-        aspectos=seguimiento_data.get("aspectos_abordados"),
+        aspectos=seguimiento_data.get("aspectos"),
         avances=seguimiento_data.get("avances"),
         retos=seguimiento_data.get("retos"),
         oportunidades=seguimiento_data.get("oportunidades"),
@@ -88,6 +88,43 @@ async def create_document(document_data: DocumentCreate, request: Request):
     create_document_structure(document_data.doc_number, request)
     
     # Devolver respuesta JSON en lugar de redirección
+    full_doc_id = f"{document_data.doc_number}_{user_id}"
+    return {
+        "success": True,
+        "message": "Documento creado exitosamente",
+        "doc_number": document_data.doc_number,
+        "full_doc_id": full_doc_id,
+        "redirect_url": f"/document/{full_doc_id}/seguimiento_1"
+    }
+
+import json
+
+@router.post("/create-document")
+async def create_document(document_data: DocumentCreate, request: Request):
+    require_auth(request)
+    user_id = request.cookies.get("user")
+    if not user_id:
+        raise HTTPException(status_code=403, detail="Usuario no autenticado")
+    
+    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{document_data.doc_number}_{user_id}"
+    if doc_path.exists():
+        raise HTTPException(status_code=400, detail="El documento ya existe")
+    
+    # Crear estructura de archivos
+    create_document_structure(document_data.doc_number, request)
+
+    # Crear JSON con los datos de la familia
+    apellido = document_data.apellido.lower().replace(" ", "_")
+    json_path = doc_path / f"familia_{apellido}.json"
+    json_content = {
+        "apellido": document_data.apellido,
+        "doc_number": document_data.doc_number,
+        "creado_por": user_id
+    }
+
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(json_content, f, ensure_ascii=False, indent=4)
+    
     full_doc_id = f"{document_data.doc_number}_{user_id}"
     return {
         "success": True,
@@ -155,34 +192,34 @@ async def add_comment(request: Request, doc_number: str, seguimiento_num: int, c
 
     return RedirectResponse(url=f"/document/{doc_number}", status_code=302)
 
-@router.get("/get-seguimiento/{doc_number}/{seguimiento_num}")
-async def get_seguimiento_data(doc_number: str, seguimiento_num: str):
-    if seguimiento_num.startswith("seguimiento_"):
-        num = seguimiento_num.replace("seguimiento_", "")
-    else:
-        raise HTTPException(status_code=400, detail="Formato de seguimiento inválido")
+# @router.get("/get-seguimiento/{doc_number}/{seguimiento_num}")
+# async def get_seguimiento_data(doc_number: str, seguimiento_num: str):
+#     if seguimiento_num.startswith("seguimiento_"):
+#         num = seguimiento_num.replace("seguimiento_", "")
+#     else:
+#         raise HTTPException(status_code=400, detail="Formato de seguimiento inválido")
 
-    # Construcción segura de ruta base
-    base_path = os.path.join(os.path.dirname(__file__), '..', 'documents', f'documento_{doc_number}')
-    base_path = os.path.abspath(base_path)
+#     # Construcción segura de ruta base
+#     base_path = os.path.join(os.path.dirname(__file__), '..', 'documents', f'documento_{doc_number}')
+#     base_path = os.path.abspath(base_path)
 
-    json_path = os.path.join(base_path, f'seguimiento_{num}', 'seguimiento.json')
+#     json_path = os.path.join(base_path, f'seguimiento_{num}', 'seguimiento.json')
 
-    if not os.path.exists(json_path):
-        json_path = os.path.join(base_path, 'imagenes', 'seguimiento.json')
-        if not os.path.exists(json_path):
-            raise HTTPException(status_code=404, detail="Archivo de seguimiento no encontrado")
+#     if not os.path.exists(json_path):
+#         json_path = os.path.join(base_path, 'imagenes', 'seguimiento.json')
+#         if not os.path.exists(json_path):
+#             raise HTTPException(status_code=404, detail="Archivo de seguimiento no encontrado")
 
-    try:
-        with open(json_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+#     try:
+#         with open(json_path, 'r', encoding='utf-8') as f:
+#             data = json.load(f)
 
-        comentarios_path = os.path.join(base_path, 'imagenes', 'comentarios.json')
-        if os.path.exists(comentarios_path):
-            with open(comentarios_path, 'r', encoding='utf-8') as f:
-                data['comentarios'] = json.load(f).get(num, [])
+#         comentarios_path = os.path.join(base_path, 'imagenes', 'comentarios.json')
+#         if os.path.exists(comentarios_path):
+#             with open(comentarios_path, 'r', encoding='utf-8') as f:
+#                 data['comentarios'] = json.load(f).get(num, [])
 
-        return data
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al leer el archivo: {str(e)}")
+#         return data
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error al leer el archivo: {str(e)}")
     

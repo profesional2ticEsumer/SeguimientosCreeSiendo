@@ -12,7 +12,7 @@
   <div class="container">
     <div class="header">
       <h1>Sistema de Registro de Acompañamientos</h1>
-      <p>Gestión integral de seguimientos familiares - Usuario: 1001</p>
+      <p>Gestión integral de seguimientos familiares - Usuario: {{ name }}</p>
     </div>
 
     <div class="main-content">
@@ -50,11 +50,11 @@
             <h2 class="form-title">Registro de Acompañamiento</h2>
             <p class="form-subtitle">Seguimiento # - Familia #</p>
           </div>
-          <div class="step-indicator">
+          <!-- <div class="step-indicator">
             {% for seg in seguimientos %}
             <span class="progress-step"></span>
             {% endfor %}
-          </div>
+          </div> -->
         </div>
 
         <form class="form-grid">
@@ -114,12 +114,12 @@
               <label for="objetivo">Objetivo del acompañamiento</label>
               <textarea id="objetivo" name="objetivo"
                 placeholder="Describe el objetivo principal de esta visita..."></textarea>
-            </div>
+            </div><br>
             <div class="form-group">
               <label for="aspectos">Principales aspectos abordados</label>
               <textarea id="aspectos" name="aspectos"
                 placeholder="Detalla los temas y aspectos principales tratados durante la visita..."></textarea>
-            </div>
+            </div><br>
             <div class="form-row">
               <div class="form-group">
                 <label for="avances">Avances evidenciados</label>
@@ -129,7 +129,7 @@
                 <label for="retos">Retos por superar</label>
                 <textarea id="retos" name="retos" placeholder="Identifica los desafíos pendientes..."></textarea>
               </div>
-            </div>
+            </div><br>
             <div class="form-group">
               <label for="oportunidades">Desarrollo o ampliación de oportunidades</label>
               <textarea id="oportunidades" name="oportunidades"
@@ -144,8 +144,8 @@
             <div class="dynamic-section" id="compromisos">
               <div class="form-group">
                 <label>Compromiso 1</label>
-                <textarea placeholder="Describe el compromiso adquirido..."></textarea>
-                <input type="date" placeholder="Fecha de cumplimiento" required>
+                <textarea placeholder="Describe el compromiso adquirido..."></textarea><br>
+                <input type="date" placeholder="Fecha de cumplimiento" required><br>
                 <input type="text" placeholder="Responsable del compromiso" required>
               </div>
             </div>

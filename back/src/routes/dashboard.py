@@ -19,6 +19,8 @@ async def dashboard(request: Request):
     require_auth(request)
 
     user = request.cookies.get("user")
+    name = request.cookies.get("name")
+    
     documents = []
 
     for doc_dir in Path(DOCUMENTS_BASE_PATH).iterdir():
@@ -52,6 +54,6 @@ async def dashboard(request: Request):
         "request": request,
         "user": user,
         "documents": documents,
-        "seguimientos": seguimientos
+        "name": name
     })
 
