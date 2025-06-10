@@ -107,6 +107,7 @@ body {
   border-radius: 10px;
   border-left: 4px solid transparent;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .follow-up-item:hover {
@@ -238,6 +239,7 @@ body {
 .form-group {
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 
 .form-group label {
@@ -425,19 +427,19 @@ body {
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(10px);
 }
 
 .upload-area:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(0, 0, 0, 0.5);
+  background: rgba(17, 15, 15, 0.1);
   transform: scale(1.02);
 }
 
 .upload-area.dragover {
   border-color: #4ade80;
-  background: rgba(74, 222, 128, 0.1);
+  background: rgba(74, 222, 128, 0.224);
   transform: scale(1.05);
 }
 

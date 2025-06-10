@@ -259,7 +259,6 @@ const imageUploader = new MultiImageUpload();
 
 // Verifica el estado del input de imágenes
 document.getElementById('imageInput').addEventListener('change', function(e) {
-    console.log('Cambio en input de imágenes. Archivos seleccionados:', e.target.files);
     
     // Verifica que los archivos se estén capturando correctamente
     if (e.target.files.length > 0) {

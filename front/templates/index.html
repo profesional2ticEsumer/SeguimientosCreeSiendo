@@ -30,7 +30,7 @@
             {% for seg in doc.seguimientos %}
             {% set estado = 'completed' if seg.enviado else 'pending' %}
             {% set texto_estado = 'Completado' if seg.enviado else 'Pendiente' %}
-            <div class="follow-up-item {{ estado }}">
+            <div class="follow-up-item {{ estado }}" onclick="loadFollowUpList('{{ familia }}','{{ entrevistador }}','{{ seg.numero }}')">
               <span>Seguimiento {{ seg.numero }}</span>
               <span class="status-badge status-{{estado}}">{{ texto_estado }}</span>
             </div>
