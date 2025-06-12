@@ -73,29 +73,29 @@ async def get_seguimiento(folder: str, follow_up: str, request: Request):
         comentarios=comentarios
     )
 
-@router.post("/create-document")
-async def create_document(document_data: DocumentCreate, request: Request):
-    require_auth(request)
-    user_id = request.cookies.get("user")
-    if not user_id:
-        raise HTTPException(status_code=403, detail="Usuario no autenticado")
+# @router.post("/create-document")
+# async def create_document(document_data: DocumentCreate, request: Request):
+#     require_auth(request)
+#     user_id = request.cookies.get("user")
+#     if not user_id:
+#         raise HTTPException(status_code=403, detail="Usuario no autenticado")
     
-    doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{document_data.doc_number}_{user_id}"
-    if doc_path.exists():
-        raise HTTPException(status_code=400, detail="El documento ya existe")
+#     doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{document_data.doc_number}_{user_id}"
+#     if doc_path.exists():
+#         raise HTTPException(status_code=400, detail="El documento ya existe")
     
-    # Crear estructura pasando el doc_number original y el request
-    create_document_structure(document_data.doc_number, request)
+#     # Crear estructura pasando el doc_number original y el request
+#     create_document_structure(document_data.doc_number, request)
     
-    # Devolver respuesta JSON en lugar de redirección
-    full_doc_id = f"{document_data.doc_number}_{user_id}"
-    return {
-        "success": True,
-        "message": "Documento creado exitosamente",
-        "doc_number": document_data.doc_number,
-        "full_doc_id": full_doc_id,
-        "redirect_url": f"/document/{full_doc_id}/seguimiento_1"
-    }
+#     # Devolver respuesta JSON en lugar de redirección
+#     full_doc_id = f"{document_data.doc_number}_{user_id}"
+#     return {
+#         "success": True,
+#         "message": "Documento creado exitosamente",
+#         "doc_number": document_data.doc_number,
+#         "full_doc_id": full_doc_id,
+#         "redirect_url": f"/document/{full_doc_id}/seguimiento_1"
+#     }
 
 import json
 

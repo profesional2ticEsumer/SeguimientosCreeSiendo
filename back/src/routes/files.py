@@ -23,10 +23,10 @@ async def upload_file(request: Request, doc_number: str, seguimiento_num: int, f
 
     return {"message": f"{len(uploaded_files)} archivos subidos", "files": uploaded_files}
 
-@router.get("/image/{doc_number}/{seguimiento_num}/{filename}")
-async def get_image(request: Request, doc_number: str, seguimiento_num: int, filename: str):
+@router.get("/image/{folder}/{seguimiento}/{filename}")
+async def get_image(request: Request, folder: str, seguimiento: str, filename: str):
     require_auth(request)
-    image_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}" / f"seguimiento_{seguimiento_num}" / "imagenes" / filename
+    image_path = Path(DOCUMENTS_BASE_PATH) / f"{folder}" / f"{seguimiento}" / "imagenes" / filename
     if not image_path.exists():
         raise HTTPException(status_code=404, detail="Imagen no encontrada")
     return FileResponse(image_path)
