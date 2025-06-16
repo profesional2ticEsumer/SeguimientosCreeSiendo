@@ -4,15 +4,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="/static/img/faviconEsumer.png" type="image/x-icon">
   <title>Sistema de Registro de Acompañamientos</title>
   <link rel="stylesheet" href="/static/css/index.css">
 </head>
 
 <body>
   <div class="container">
+    
     <div class="header">
-      <h1>Sistema de Registro de Acompañamientos</h1>
-      <p>Gestión integral de seguimientos familiares - Usuario: {{ name }}</p>
+      <div class="logo-container">
+        <div class="logo-section1">
+          <img src="/static/img/LogoEsumer.webp" alt="Logotipo de universidad esumer" class="">
+        </div>
+        <div class="logo-section2">
+          <img src="/static/img/logoCreeSiendo.png" alt="Logotipo creesiendo" class="">
+        </div>
+        </div>
+      <div class="header-title">
+        <h1>Sistema de Registro de Acompañamientos</h1>
+        <p>Gestión integral de seguimientos familiares - Usuario: {{ name }}</p>
+      </div>
     </div>
 
     <div class="main-content">
@@ -30,17 +42,25 @@
             {% for seg in doc.seguimientos %}
             {% set estado = 'completed' if seg.enviado else 'pending' %}
             {% set texto_estado = 'Completado' if seg.enviado else 'Pendiente' %}
-            <div class="follow-up-item {{ estado }}" onclick="loadFollowUpList('{{ familia }}','{{ entrevistador }}','{{ seg.numero }}')">
-              <span>Seguimiento {{ seg.numero }}</span>
-              <span class="status-badge status-{{estado}}">{{ texto_estado }}</span>
+            <div class="follow-up-item-container">
+              <div class="follow-up-item {{ estado }}" onclick="loadFollowUpList('{{ familia }}','{{ entrevistador }}','{{ seg.numero }}')">
+                <span>Seguimiento {{ seg.numero }}</span>
+                <span class="status-badge status-{{estado}}">{{ texto_estado }}</span>
+              </div>
+              {% if texto_estado == "Completado" %}
+              <div class="follow-up-files">
+                <span class="icon-seguimiento" id="generarPDF"><img src="/static/img/icons/pdf.png" alt="Icono de archivos pdf"></span>
+              </div>
+              {% endif %}
             </div>
+            
             {% endfor %}
           </div>
         </div>
         {% endfor %}
 
         <button class="add-button" onclick="createNewFamily()">
-          ➕ Crear Nueva Familia
+          <img src="/static/img/icons/circulo-plus.png" alt="icono agregar mas"> Crear Nueva Familia
         </button>
       </div>
 
@@ -242,8 +262,10 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/static/js/html2pdf.bundle.min.js"></script>
   <script src="/static/js/control_images.js"></script>
   <script src="/static/js/index.js"></script>
+  <script src="/static/js/document.js"></script>
 </body>
 
 </html>

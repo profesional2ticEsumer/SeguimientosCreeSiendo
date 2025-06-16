@@ -1,54 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/img/faviconEsumer.png" type="image/x-icon">
     <title>Iniciar Sesión</title>
     <link rel="stylesheet" href="/static/css/login.css">
 </head>
+
 <body>
-    
+
     <div class="login-container">
-        <img src="/static/img/logoLogin.png" alt="Logo" class="logo-login">
+        <div class="login-section-logos">
+            <img src="/static/img/LogoEsumer.webp" alt="Logo" class="logo-login">
+            <img src="/static/img/logoCreeSiendo.png" alt="Logotipo CreeSiendo" class="logo-creesiendo">
+        </div>
 
-        <h3>Seguimiento CreeSiendo</h3><br>
+        <h2 class="login-title">Seguimiento CreeSiendo</h2>
 
-        <form action="/login" method="post">
-            <label for="username">Usuario:</label>
-            <input type="text" id="username" name="username" required>
-            
-            <label for="password">Contraseña:</label>
-            <div class="password-container">
-                <input type="password" id="password" name="password" required>
-                <span class="toggle-password" onclick="togglePassword()">👁️</span>
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="username" class="input-field" required>
+                <label for="username" class="input-label">Usuario</label>
+                <!-- <div class="validation-message" id="usernameError"></div>
+                <div class="success-message" id="usernameSuccess"></div> -->
             </div>
-            
-            <button type="submit">Entrar</button>
+
+            <div class="input-group">
+                <input type="password" id="password" class="input-field" required>
+                <label for="password" class="input-label">Contraseña</label>
+                <button type="button" class="password-toggle" id="togglePassword"><img src="/static/img/icons/ojo.png" alt="Icono ojo abierto"></button>
+                <!-- <div class="validation-message" id="passwordError"></div>
+                <div class="success-message" id="passwordSuccess"></div> -->
+            </div>
+
+            <div class=""></div>
+
+
+            <button type="submit" class="login-btn">Iniciar Sesión</button>
         </form>
-
-        <!-- <% if (typeof error !== 'undefined' && error === '1') { %>
-            <div class="error">Usuario o contraseña incorrectos</div>
-        <% } %> -->
-        <div class="error" id="error-message" style="display: none;">Usuario o contraseña incorrectos</div>
     </div>
-    
-    <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
-        }
 
-        // Verificar si hay error en la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('error') === '1') {
-            document.getElementById('error-message').style.display = 'block';
-        }
-
-        // Limpiar el parámetro de error de la URL sin recargar
-        if (window.history.replaceState && urlParams.get('error')) {
-            const cleanUrl = window.location.pathname;
-            window.history.replaceState({}, document.title, cleanUrl);
-        }
-    </script>
-   
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/login.js"></script>
 </body>
+
 </html>

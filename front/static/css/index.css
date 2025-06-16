@@ -6,7 +6,7 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #202B52 0%, #202b52c6 100%);
+  background: linear-gradient(135deg, #e0e0e0 0%, #f2f2f2 100%);
   min-height: 100vh;
   padding: 20px;
 }
@@ -16,25 +16,47 @@ body {
   margin: 0 auto;
 }
 
+.logo-container {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
+
+.logo-section1, .logo-section2 {
+  width: 25%;
+  height: auto;
+}
+
+.logo-section1 img , .logo-section2 img {
+  width: 100%;
+  height: auto;
+}
+
 .header {
-  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.949);/* linear-gradient(135deg, #202B52 0%, #202b52c6 100%); */
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 30px;
   text-align: center;
   margin-bottom: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.592);
+}
+.header-title{
+  display: block;
 }
 
 .header h1 {
-  color: white;
+  color: black;
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 10px;
 }
 
 .header p {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(75, 75, 75, 0.8);
   font-size: 1.1rem;
 }
 
@@ -94,7 +116,13 @@ body {
 }
 
 .follow-up-list.active {
-  display: block;
+  display: inline-block;
+}
+
+.follow-up-item-container {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .follow-up-item {
@@ -127,8 +155,23 @@ body {
   border-left-color: #ef4444;
 }
 
+.follow-up-files {
+  background: #f8fafc;
+  padding: 12px 15px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.follow-up-files:hover {
+  background: #e2e8f0;
+  transform: scale(1.07);
+}
+
 .status-badge {
   padding: 4px 12px;
+  margin-left: 8px;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -148,6 +191,11 @@ body {
 .status-pending {
   background: #fee2e2;
   color: #991b1b;
+}
+
+.icon-seguimiento img {
+  width: 24px;
+  height: 24px;
 }
 
 .form-container {
@@ -291,6 +339,12 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.add-button img {
+  width: 20px;
+  height: 20px;
+  filter: invert();
 }
 
 .add-button:hover {

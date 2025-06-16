@@ -138,3 +138,13 @@ document.querySelectorAll('form[id^="form-seguimiento-"]').forEach((form) => {
 		return true;
 	});
 });
+
+document.getElementById('generarPDF').addEventListener('click', function (e) {
+	if (this.classList.contains('disabled')) {
+		e.preventDefault();
+		alert('Por favor, complete el formulario antes de generar el PDF.');
+		return;
+	}
+	exportToPDF(this);
+}
+);
