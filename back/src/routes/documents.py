@@ -2,7 +2,7 @@ from itertools import zip_longest
 import os
 from typing import Dict, List, Union
 from fastapi import APIRouter, Request, Form, HTTPException, logger
-from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
+from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 import json
@@ -11,6 +11,10 @@ from utils.helpers import require_auth, create_document_structure, load_seguimie
 from models.seguimiento import SeguimientoResponse, Compromiso, Participante
 from models.save_seguimiento import SeguimientoData
 from models.documents import DocumentCreate
+
+from utils.generate_pdf import PDFGenerator
+
+pdf_generator = PDFGenerator()
 
 router = APIRouter()
 templates = Jinja2Templates(directory="../../front/templates")
@@ -49,13 +53,13 @@ async def get_seguimiento(folder: str, follow_up: str, request: Request):
     ]
     
     # Convertir comentarios
-    comentarios = [
-        Comentario(
-            autor=c["autor"],
-            contenido=c["contenido"],
-            fecha=c["fecha"]
-        ) for c in seguimiento_data.get("comentarios", [])
-    ]
+    # comentarios = [
+    #     Comentario(
+    #         autor=c["autor"],
+    #         contenido=c["contenido"],
+    #         fecha=c["fecha"]
+    #     ) for c in seguimiento_data.get("comentarios", [])
+    # ]
         
     return SeguimientoResponse(
         numero=follow_up.replace("seguimiento_", ""),
@@ -69,35 +73,9 @@ async def get_seguimiento(folder: str, follow_up: str, request: Request):
         retos=seguimiento_data.get("retos"),
         oportunidades=seguimiento_data.get("oportunidades"),
         compromisos=compromisos,
-        participantes=participantes,
-        comentarios=comentarios
+        participantes=participantes
+        # comentarios=comentarios
     )
-
-# @router.post("/create-document")
-# async def create_document(document_data: DocumentCreate, request: Request):
-#     require_auth(request)
-#     user_id = request.cookies.get("user")
-#     if not user_id:
-#         raise HTTPException(status_code=403, detail="Usuario no autenticado")
-    
-#     doc_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{document_data.doc_number}_{user_id}"
-#     if doc_path.exists():
-#         raise HTTPException(status_code=400, detail="El documento ya existe")
-    
-#     # Crear estructura pasando el doc_number original y el request
-#     create_document_structure(document_data.doc_number, request)
-    
-#     # Devolver respuesta JSON en lugar de redirección
-#     full_doc_id = f"{document_data.doc_number}_{user_id}"
-#     return {
-#         "success": True,
-#         "message": "Documento creado exitosamente",
-#         "doc_number": document_data.doc_number,
-#         "full_doc_id": full_doc_id,
-#         "redirect_url": f"/document/{full_doc_id}/seguimiento_1"
-#     }
-
-import json
 
 @router.post("/create-document")
 async def create_document(document_data: DocumentCreate, request: Request):
@@ -155,6 +133,8 @@ async def save_seguimiento(
     # Cargar datos del seguimiento existente
     seguimiento_data = data.dict()
 
+    # result = pdf_generator.create_reporte_pdf(seguimiento_data)
+
     # Guardar datos del seguimiento
     save_seguimiento_data(seguimiento_path, seguimiento_data)
     
@@ -192,34 +172,44 @@ async def add_comment(request: Request, doc_number: str, seguimiento_num: int, c
 
     return RedirectResponse(url=f"/document/{doc_number}", status_code=302)
 
-# @router.get("/get-seguimiento/{doc_number}/{seguimiento_num}")
-# async def get_seguimiento_data(doc_number: str, seguimiento_num: str):
-#     if seguimiento_num.startswith("seguimiento_"):
-#         num = seguimiento_num.replace("seguimiento_", "")
-#     else:
-#         raise HTTPException(status_code=400, detail="Formato de seguimiento inválido")
 
-#     # Construcción segura de ruta base
-#     base_path = os.path.join(os.path.dirname(__file__), '..', 'documents', f'documento_{doc_number}')
-#     base_path = os.path.abspath(base_path)
-
-#     json_path = os.path.join(base_path, f'seguimiento_{num}', 'seguimiento.json')
-
-#     if not os.path.exists(json_path):
-#         json_path = os.path.join(base_path, 'imagenes', 'seguimiento.json')
-#         if not os.path.exists(json_path):
-#             raise HTTPException(status_code=404, detail="Archivo de seguimiento no encontrado")
-
-#     try:
-#         with open(json_path, 'r', encoding='utf-8') as f:
-#             data = json.load(f)
-
-#         comentarios_path = os.path.join(base_path, 'imagenes', 'comentarios.json')
-#         if os.path.exists(comentarios_path):
-#             with open(comentarios_path, 'r', encoding='utf-8') as f:
-#                 data['comentarios'] = json.load(f).get(num, [])
-
-#         return data
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Error al leer el archivo: {str(e)}")
+@router.get("/download-pdf/{folder}/{filename}")
+async def download_pdf(folder: str, filename: str):
+    """
+    Endpoint para descargar un archivo PDF
     
+    Args:
+        folder: Carpeta donde se encuentra el archivo PDF
+        filename: Nombre del archivo PDF a descargar
+        
+    Returns:
+        Archivo PDF como respuesta de descarga
+    """
+    try:
+        # Verificar que el archivo existe
+        doc_path = Path(DOCUMENTS_BASE_PATH) / f"{folder}/{filename}"
+        if not doc_path.exists():
+            raise HTTPException(status_code=404, detail="Documento no encontrado")
+
+        # Cargar datos del seguimiento existente
+        seguimiento_path = doc_path
+
+        seguimiento_data = load_seguimiento_data(seguimiento_path)
+
+        result = pdf_generator.create_reporte_pdf(seguimiento_data)
+        
+        print(f"Generando PDF: {result['filename']} en {result['file_path']}")
+
+        # Retornar archivo para descarga
+        return FileResponse(
+            path=result['file_path'],
+            filename=result['filename'],
+            media_type='application/pdf',
+            headers={"Content-Disposition": f"attachment; filename={result['filename']}"}
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error descargando archivo: {str(e)}")

@@ -49,7 +49,7 @@
               </div>
               {% if texto_estado == "Completado" %}
               <div class="follow-up-files">
-                <span class="icon-seguimiento" id="generarPDF"><img src="/static/img/icons/pdf.png" alt="Icono de archivos pdf"></span>
+                <span class="icon-seguimiento" id="generarPDF" onclick="Download_pdf('{{ familia }}', '{{ entrevistador }}','{{ seg.numero }}')"><img src="/static/img/icons/pdf.png" alt="Icono de archivos pdf"></span>
               </div>
               {% endif %}
             </div>
@@ -262,10 +262,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="/static/js/html2pdf.bundle.min.js"></script>
   <script src="/static/js/control_images.js"></script>
   <script src="/static/js/index.js"></script>
-  <script src="/static/js/document.js"></script>
 </body>
 
 </html>

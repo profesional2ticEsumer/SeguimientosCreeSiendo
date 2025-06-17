@@ -386,6 +386,20 @@ function addParticipante() {
   container.appendChild(row);
 }
 
+async function Download_pdf (familyId, adviserId, seguiId) {
+  try {
+    await fetch(`/download-pdf/documento_${familyId}_${adviserId}/seguimiento_${seguiId}`)
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      })
+      .catch(error => console.error('Error al abrir el PDF:', error));
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Error descargando archivo');
+  }
+}
+
 // Inicialización al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
   // Configurar botones
