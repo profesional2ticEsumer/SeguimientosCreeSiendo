@@ -184,7 +184,9 @@ class MultiImageUpload {
                 this.images = [];
                 this.imagesGrid.innerHTML = '';
 
-                const imageUrl = `${endpointGetImage}/${folderName}/${trackingName}/${imageName}`;
+                // const imageUrl = `${endpointGetImage}/seguimientos/${folderName}/${trackingName}/${imageName}`;
+
+                const imageUrl = `/seguimientos${endpointGetImage}/${folderName}/${trackingName}/${imageName}`;
 
                 const response = await fetch(imageUrl);
                 if (!response.ok) {

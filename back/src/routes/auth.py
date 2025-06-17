@@ -35,7 +35,7 @@ async def login(response: Response, username: str = Form(...), password: str = F
     if not user_data or password != user_data["password"]:
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
 
-    response = RedirectResponse(url="/dashboard", status_code=302)
+    response = RedirectResponse(url="/seguimientos/dashboard", status_code=302)
     response.set_cookie(key="auth", value="true", max_age=3600, httponly=False)
     response.set_cookie(key="user", value=username, max_age=3600, httponly=False)
     response.set_cookie(key="role", value=user_data["role"], max_age=3600, httponly=False)
@@ -45,7 +45,7 @@ async def login(response: Response, username: str = Form(...), password: str = F
 
 @router.post("/logout")
 async def logout(request: Request, response: Response):
-    response = RedirectResponse(url="/", status_code=302)
+    response = RedirectResponse(url="/seguimientos", status_code=302)
     response.delete_cookie("auth")
     response.delete_cookie("user")
     response.delete_cookie("role")

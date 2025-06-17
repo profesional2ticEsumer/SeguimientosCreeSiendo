@@ -53,7 +53,7 @@
         <div class="header"><h2>Bienvenido, {{ user }}</h2></div>
         
         <div class="seguimiento">
-            <form action="/create-document" method="post">
+            <form action="/seguimientos/create-document" method="post">
                 <label>Registrar cédula (cabeza de hogar):</label>
                 <input type="text" name="doc_number" required>
                 <br><button type="submit" class="btn">Crear carpeta</button>
@@ -72,7 +72,7 @@
                         <div class="seguimientos-container">
                             {% for seg in doc.seguimientos %}
                                 <div class="seguimiento-item">
-                                    <a href="/document/{{ doc.doc_number }}_{{doc.doc_adviser}}/{{ seg.id }}">
+                                    <a href="/seguimientos/document/{{ doc.doc_number }}_{{doc.doc_adviser}}/{{ seg.id }}">
                                         Seguimiento {{ seg.numero }}
                                         <span class="status-badge {{ 'enviado' if seg.enviado else 'pendiente' }}">
                                             {{ 'Registrado' if seg.enviado else 'Pendiente' }}
@@ -86,7 +86,7 @@
             </div>
         </div>
         
-        <form action="/logout" method="post">
+        <form action="/seguimientos/logout" method="post">
             <button type="submit" class="btn">Cerrar sesión</button>
         </form>
     </div>

@@ -7,7 +7,7 @@ const MAX_SEGUIMIENTOS = 8; // Número total de seguimientos
 // Funcion para cargar el formulario con datos
 async function loadSeguimiento(familyId, adviserId) {
   try {
-    const response = await fetch(`/get-seguimiento/documento_${familyId}_${adviserId}/seguimiento_${currentSeguimiento}`);
+    const response = await fetch(`/seguimientos/get-seguimiento/documento_${familyId}_${adviserId}/seguimiento_${currentSeguimiento}`);
     if (!response.ok) {
       throw new Error(!response.ok ? `Error al cargar el seguimiento ${currentSeguimiento}` : 'Error de red');
     }
@@ -80,7 +80,7 @@ async function createNewFamily() {
 
   if (result) {
     // Enviar al backend
-    const response = await fetch('/create-document', {
+    const response = await fetch('/seguimientos/create-document', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -128,7 +128,7 @@ async function saveAndContinue() {
     const formData = collectFormData();
 
     // 1. Enviar datos del formulario
-    const response = await fetch(`/save-seguimiento/documento_${currentDocId}_${currentasviserId}/seguimiento_${currentSeguimiento}`, {
+    const response = await fetch(`/seguimientos/save-seguimiento/documento_${currentDocId}_${currentasviserId}/seguimiento_${currentSeguimiento}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ async function saveAndContinue() {
       });
 
       try {
-        const uploadResponse = await fetch(`/upload-file/${currentDocId}_${currentasviserId}/${currentSeguimiento}`, {
+        const uploadResponse = await fetch(`/seguimientos/upload-file/${currentDocId}_${currentasviserId}/${currentSeguimiento}`, {
           method: 'POST',
           credentials: 'include',
           body: formDataImages
@@ -205,7 +205,7 @@ async function saveAndContinue() {
         text: 'Has completado todos los seguimientos para esta familia.',
         confirmButtonText: 'Ir al dashboard'
       }).then(() => {
-        window.location.href = '/dashboard';
+        window.location.href = '/seguimientos/dashboard';
       });
     }
   } catch (error) {
@@ -388,7 +388,7 @@ function addParticipante() {
 
 async function Download_pdf (familyId, adviserId, seguiId) {
   try {
-    await fetch(`/download-pdf/documento_${familyId}_${adviserId}/seguimiento_${seguiId}`)
+    await fetch(`/seguimientos/download-pdf/documento_${familyId}_${adviserId}/seguimiento_${seguiId}`)
       .then(response => response.blob())
       .then(blob => {
         const url = window.URL.createObjectURL(blob);

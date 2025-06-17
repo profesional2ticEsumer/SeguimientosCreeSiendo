@@ -13,7 +13,7 @@ togglePassword.addEventListener('click', function () {
   const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
   passwordInput.setAttribute('type', type);
   console.log(this.lastChild.getAttribute('src'));
-  this.lastChild.getAttribute('src') === '/static/img/icons/ojo.png' ? this.lastChild.setAttribute('src', '/static/img/icons/cerrar-ojo.png') : this.lastChild.setAttribute('src', '/static/img/icons/ojo.png');
+  this.lastChild.getAttribute('src') === '/seguimientos/static/img/icons/ojo.png' ? this.lastChild.setAttribute('src', '/seguimientos/static/img/icons/cerrar-ojo.png') : this.lastChild.setAttribute('src', '/seguimientos/static/img/icons/ojo.png');
 });
 
 // Validación en tiempo real para usuario
@@ -72,7 +72,7 @@ loginForm.addEventListener('submit', function (e) {
         formData.append('username', username);
         formData.append('password', password);
 
-        const response = await fetch('/login', {
+        const response = await fetch('/seguimientos/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -87,7 +87,7 @@ loginForm.addEventListener('submit', function (e) {
         }
 
         // Si la respuesta es exitosa (200), redirigir
-        window.location.href = '/dashboard';
+        window.location.href = '/seguimientos/dashboard';
 
       } catch (error) {
         showError(usernameError, error.message);
