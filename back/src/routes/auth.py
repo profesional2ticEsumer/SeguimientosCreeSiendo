@@ -12,20 +12,50 @@ AUTHORIZED_USERS = {
         "role": "admin",
         "name":"administrador"
     },
-    "1001": {
+    "1040744789": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Usuario 1"
+        "name":"Juliana Jaramillo Mazo"
     },
-    "1002": {
+    "1039701366": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Usuario 2"
+        "name":"Jheniffer Marcela Pérez"
     },
-    "1003": {
+    "1036928529": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Usuario 3"
+        "name":"Lina Marcela Botero Escobar"
+    },
+    "39452804": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name":"Paola Andrea Mejía"
+    },
+    "15437492": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name":"Duvian Sanchez Gallego"
+    },
+    "1036397698": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name":"Gloria María Ospina Cardona"
+    },
+    "1152209099": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name":"Valentina Suarique Agudelo"
+    },
+    "1026148543": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name":"Melissa Soto Velez"
+    },
+    "1036951860": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name":"Maria Alejandra Franco Jimenez"
     }
 }
 

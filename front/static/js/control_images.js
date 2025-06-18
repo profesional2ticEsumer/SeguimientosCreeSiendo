@@ -359,15 +359,3 @@ class MultiImageUpload {
 // Inicializar el uploader
 const imageUploader = new MultiImageUpload();
 
-// Verifica el estado del input de imágenes
-// document.getElementById('imageInput').addEventListener('change', function (e) {
-
-//     // Verifica que los archivos se estén capturando correctamente
-//     if (e.target.files.length > 0) {
-//         console.log('Detalles del primer archivo:', {
-//             name: e.target.files[0].name,
-//             size: e.target.files[0].size,
-//             type: e.target.files[0].type
-//         });
-//     }
-// });
