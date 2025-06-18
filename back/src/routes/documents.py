@@ -172,6 +172,37 @@ async def add_comment(request: Request, doc_number: str, seguimiento_num: int, c
 
     return RedirectResponse(url=f"/document/{doc_number}", status_code=302)
 
+@router.delete("/delete-document/{folder}")
+async def delete_document(folder: str, request: Request):
+    """
+    Elimina carpeta de un documento y todos sus seguimientos
+    
+    Args:
+        folder: nombre de la carpeta del documento a eliminar
+        
+    Returns:
+        Mensaje de éxito o error
+    """
+    require_auth(request)
+    
+    doc_path = Path(DOCUMENTS_BASE_PATH) / f"{folder}"
+    
+    if not doc_path.exists():
+        raise HTTPException(status_code=404, detail="Seguimiento no encontrado")
+    
+    try:
+        # Eliminar el directorio del seguimiento
+        for item in doc_path.iterdir():
+            if item.is_file():
+                item.unlink()
+            else:
+                os.rmdir(item)
+        os.rmdir(doc_path)
+        
+        return JSONResponse(status_code=200, content={"message": "Seguimiento eliminado exitosamente"})
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al eliminar el seguimiento: {str(e)}")
 
 @router.get("/download-pdf/{folder}/{filename}")
 async def download_pdf(folder: str, filename: str):

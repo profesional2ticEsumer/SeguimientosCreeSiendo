@@ -9,54 +9,94 @@ router = APIRouter()
 AUTHORIZED_USERS = {
     "administrador": {
         "password": "Esumer2025**",
-        "role": "admin",
-        "name":"administrador"
+        "role": "superadmin",
+        "name": "Eduardo Duque"
+    },
+    "administrador2": {
+        "password": "Esumer2025**",
+        "role": "superadmin",
+        "name": "Maria Jose Castaño"
     },
     "1040744789": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Juliana Jaramillo Mazo"
+        "name": "Juliana Jaramillo Mazo"
     },
     "1039701366": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Jheniffer Marcela Pérez"
+        "name": "Jheniffer Marcela Pérez"
     },
     "1036928529": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Lina Marcela Botero Escobar"
+        "name": "Lina Marcela Botero Escobar"
     },
     "39452804": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Paola Andrea Mejía"
+        "name": "Paola Andrea Mejía"
     },
     "15437492": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Duvian Sanchez Gallego"
+        "name": "Duvian Sanchez Gallego"
     },
     "1036397698": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Gloria María Ospina Cardona"
+        "name": "Gloria María Ospina Cardona"
     },
     "1152209099": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Valentina Suarique Agudelo"
+        "name": "Valentina Suarique Agudelo"
     },
     "1026148543": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Melissa Soto Velez"
+        "name": "Juliana Jaramillo Mazo"
+    },
+    "1039701366": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name": "Jheniffer Marcela Pérez"
+    },
+    "1036928529": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name": "Lina Marcela Botero Escobar"
+    },
+    "39452804": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name": "Paola Andrea Mejía"
+    },
+    "15437492": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name": "Duvian Sanchez Gallego"
+    },
+    "1036397698": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name": "Gloria María Ospina Cardona"
+    },
+    "1152209099": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name": "Melissa Soto Velez"
     },
     "1036951860": {
         "password": "Esumer2025**",
         "role": "admin",
-        "name":"Maria Alejandra Franco Jimenez"
-    }
+        "name": "Maria Alejandra Franco Jimenez"
+    },
+    "71291859": {
+        "password": "Esumer2025**",
+        "role": "admin",
+        "name": "Edisson Andres Perez"
+    },
 }
 
 @router.post("/login")
