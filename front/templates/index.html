@@ -39,10 +39,12 @@
             <div class="family-id" onclick="toggleFollowUps('{{ familia }}', '{{ entrevistador }}')">
               📋 {{ doc.doc_number }}
             </div>
+            {% if user_role == 'superadmin' %}
             <div class="family-delete">
               <img src="/seguimientos/static/img/icons/bote-de-basura.png" alt="icono de eliminar" class="delete-icon"
                 onclick="deleteFamily('{{ familia }}', '{{ entrevistador }}')">
             </div>
+            {% endif %}
           </div>
         </div>
 

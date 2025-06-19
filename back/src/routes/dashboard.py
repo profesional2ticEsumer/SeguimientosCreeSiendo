@@ -79,6 +79,7 @@ async def dashboard(request: Request):
     return templates.TemplateResponse("index.html", {
         "request": request,
         "user": user,
+        "user_role": user_role,
         "documents": documents,
         "name": name
     })
