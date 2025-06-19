@@ -11,7 +11,7 @@
 
 <body>
   <div class="container">
-    
+
     <div class="header">
       <div class="logo-container">
         <div class="logo-section1">
@@ -20,7 +20,7 @@
         <div class="logo-section2">
           <img src="/seguimientos/static/img/logoCreeSiendo.png" alt="Logotipo creesiendo" class="">
         </div>
-        </div>
+      </div>
       <div class="header-title">
         <h1>Sistema de Registro de Acompañamientos</h1>
         <p>Gestión integral de seguimientos familiares - Usuario: {{ name }}</p>
@@ -35,30 +35,38 @@
         {% set familia = doc.doc_number %}
         {% set entrevistador = doc.doc_adviser %}
         <div class="family-section">
-          <div class="family-id" onclick="toggleFollowUps('{{ familia }}', '{{ entrevistador }}')">
-            📋 {{ doc.doc_number }}
-          </div>
-          <div class="follow-up-list" id="{{ familia }}">
-            {% for seg in doc.seguimientos %}
-            {% set estado = 'completed' if seg.enviado else 'pending' %}
-            {% set texto_estado = 'Completado' if seg.enviado else 'Pendiente' %}
-            <div class="follow-up-item-container">
-              <div class="follow-up-item {{ estado }}" onclick="loadFollowUpList('{{ familia }}','{{ entrevistador }}','{{ seg.numero }}')">
-                <span>Seguimiento {{ seg.numero }}</span>
-                <span class="status-badge status-{{estado}}">{{ texto_estado }}</span>
-              </div>
-              {% if texto_estado == "Completado" %}
-              <div class="follow-up-files">
-                <span class="icon-seguimiento" id="generarPDF" onclick="Download_pdf('{{ familia }}', '{{ entrevistador }}','{{ seg.numero }}')"><img src="/seguimientos/static/img/icons/pdf.png" alt="Icono de archivos pdf"></span>
-              </div>
-              {% endif %}
+          <div class="family-content">
+            <div class="family-id" onclick="toggleFollowUps('{{ familia }}', '{{ entrevistador }}')">
+              📋 {{ doc.doc_number }}
             </div>
-            
-            {% endfor %}
+            <div class="family-delete">
+              <img src="/seguimientos/static/img/icons/bote-de-basura.png" alt="icono de eliminar" class="delete-icon"
+                onclick="deleteFamily('{{ familia }}', '{{ entrevistador }}')">
+            </div>
           </div>
         </div>
-        {% endfor %}
 
+        <div class="follow-up-list" id="{{ familia }}">
+          {% for seg in doc.seguimientos %}
+          {% set estado = 'completed' if seg.enviado else 'pending' %}
+          {% set texto_estado = 'Completado' if seg.enviado else 'Pendiente' %}
+          <div class="follow-up-item-container">
+            <div class="follow-up-item {{ estado }}"
+              onclick="loadFollowUpList('{{ familia }}','{{ entrevistador }}','{{ seg.numero }}')">
+              <span>Seguimiento {{ seg.numero }}</span>
+              <span class="status-badge status-{{estado}}">{{ texto_estado }}</span>
+            </div>
+            {% if texto_estado == "Completado" %}
+            <div class="follow-up-files">
+              <span class="icon-seguimiento" id="generarPDF"
+                onclick="Download_pdf('{{ familia }}', '{{ entrevistador }}','{{ seg.numero }}')"><img
+                  src="/seguimientos/static/img/icons/pdf.png" alt="Icono de archivos pdf"></span>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
         <button class="add-button" onclick="createNewFamily()">
           <img src="/seguimientos/static/img/icons/circulo-plus.png" alt="icono agregar mas"> Crear Nueva Familia
         </button>
@@ -252,13 +260,16 @@
       </div>
     </div>
 
-    <div class="modal" id="imageModal">
-        <div class="modal-content">
-            <button class="modal-close" id="modalClose">&times;</button>
-            <img class="modal-image" id="modalImage" alt="Vista previa">
-        </div>
+
+  </div>
+
+  <div class="modal" id="imageModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <img class="modal-image" id="modalImage" alt="Vista previa">
     </div>
-    
+  </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -30,3 +30,13 @@ async def get_image(request: Request, folder: str, seguimiento: str, filename: s
     if not image_path.exists():
         raise HTTPException(status_code=404, detail="Imagen no encontrada")
     return FileResponse(image_path)
+
+@router.delete("/delete-file/{doc_number}/{filename}")
+async def delete_file(request: Request, doc_number: str, filename: str):
+    require_auth(request)
+    file_path = Path(DOCUMENTS_BASE_PATH) / f"documento_{doc_number}" / "imagenes" / filename
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Archivo no encontrado")
+    
+    file_path.unlink()
+    return {"message": "Archivo eliminado exitosamente"}

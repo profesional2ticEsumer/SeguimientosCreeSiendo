@@ -1,5 +1,6 @@
 from itertools import zip_longest
 import os
+import shutil
 from typing import Dict, List, Union
 from fastapi import APIRouter, Request, Form, HTTPException, logger
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse, FileResponse
@@ -172,6 +173,7 @@ async def add_comment(request: Request, doc_number: str, seguimiento_num: int, c
 
     return RedirectResponse(url=f"/document/{doc_number}", status_code=302)
 
+
 @router.delete("/delete-document/{folder}")
 async def delete_document(folder: str, request: Request):
     """
@@ -184,25 +186,24 @@ async def delete_document(folder: str, request: Request):
         Mensaje de éxito o error
     """
     require_auth(request)
-    
+
     doc_path = Path(DOCUMENTS_BASE_PATH) / f"{folder}"
-    
+
     if not doc_path.exists():
-        raise HTTPException(status_code=404, detail="Seguimiento no encontrado")
-    
+        raise HTTPException(status_code=404, detail="Documento no encontrado")
+
     try:
-        # Eliminar el directorio del seguimiento
-        for item in doc_path.iterdir():
-            if item.is_file():
-                item.unlink()
-            else:
-                os.rmdir(item)
-        os.rmdir(doc_path)
-        
-        return JSONResponse(status_code=200, content={"message": "Seguimiento eliminado exitosamente"})
-    
+        # Eliminar todo el directorio y su contenido recursivamente
+        shutil.rmtree(doc_path)
+
+        return JSONResponse(status_code=200, content={"message": "Documento eliminado exitosamente"})
+
+    except PermissionError:
+        raise HTTPException(
+            status_code=403, detail="Sin permisos para eliminar el documento")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al eliminar el seguimiento: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error al eliminar el documento: {str(e)}")
 
 @router.get("/download-pdf/{folder}/{filename}")
 async def download_pdf(folder: str, filename: str):
@@ -244,3 +245,31 @@ async def download_pdf(folder: str, filename: str):
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error descargando archivo: {str(e)}")
+
+@router.delete("/delete-document-pdf/{filename}")
+async def delete_document_pdf(filename: str, request: Request):
+    """
+    Elimina un archivo PDF específico del documento
+    
+    Args:
+        filename: Nombre del archivo PDF a eliminar
+        
+    Returns:
+        Mensaje de éxito o error
+    """
+    require_auth(request)
+    
+    try:
+        # Verificar que el archivo existe
+        doc_path = Path(DOCUMENTS_BASE_PATH) / f"pdfs/{filename}"
+        if not doc_path.exists():
+            raise HTTPException(status_code=404, detail="Documento no encontrado")
+        
+        # Eliminar el archivo PDF
+        doc_path.unlink()
+        
+        return JSONResponse(status_code=200, content={"message": "Documento eliminado exitosamente"})
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al eliminar el documento: {str(e)}")
+

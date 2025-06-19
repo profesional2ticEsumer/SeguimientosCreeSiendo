@@ -218,6 +218,49 @@ async function saveAndContinue() {
   }
 }
 
+async function deleteFamily(familyId, adviserId) {
+  const { value: confirm } = await Swal.fire({
+    title: '¿Eliminar familia?',
+    text: 'Esta acción eliminará todos los seguimientos y datos asociados a esta familia.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Eliminar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (confirm) {
+    try {
+      const response = await fetch(`/seguimientos/delete-document/documento_${familyId}_${adviserId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'credentials': 'include',
+        }
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error al eliminar la familia');
+      } 
+      Swal.fire({
+        icon: 'success',
+        title: 'Familia eliminada',
+        text: 'Todos los seguimientos y datos asociados han sido eliminados correctamente.',
+        confirmButtonText: 'Aceptar'
+      }).then(() => {
+        window.location.reload(); // Recargar la página para reflejar los cambios
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al eliminar',
+        text: error.message || 'Ocurrió un error al eliminar la familia.',
+        confirmButtonText: 'Aceptar'
+      });
+    }
+  }
+}
+
+
 // Funcion para cargar seguimiento de listado
 function loadFollowUpList(familyId, adviserId, seguimiento) {
   const followUpList = document.getElementById(familyId);

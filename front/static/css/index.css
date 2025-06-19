@@ -89,12 +89,26 @@ body {
   font-size: 1.2rem;
 }
 
-.family-section {
+/* .family-section {
   margin-bottom: 30px;
-}
+} */
 
 .family-id {
   background: linear-gradient(135deg, #202b52c6, #202B52);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  width: 100%;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.family-delete {
+  background: linear-gradient(135deg, #ef4444, #f87171);
   color: white;
   padding: 15px 20px;
   border-radius: 12px;
@@ -105,7 +119,20 @@ body {
   transition: all 0.3s ease;
 }
 
-.family-id:hover {
+.family-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.delete-icon {
+  width: 25px;
+  height: 25px;
+  filter: invert(1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.family-id:hover, .family-delete:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
 }
@@ -117,6 +144,8 @@ body {
 
 .follow-up-list.active {
   display: inline-block;
+  margin-bottom: 30px;
+  margin-left: 20px;
 }
 
 .follow-up-item-container {
