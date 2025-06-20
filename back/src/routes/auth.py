@@ -57,32 +57,12 @@ AUTHORIZED_USERS = {
         "role": "admin",
         "name": "Juliana Jaramillo Mazo"
     },
-    "1039701366": {
-        "password": "Esumer2025**",
-        "role": "admin",
-        "name": "Jheniffer Marcela Pérez"
-    },
     "1036928529": {
         "password": "Esumer2025**",
         "role": "admin",
         "name": "Lina Marcela Botero Escobar"
     },
-    "39452804": {
-        "password": "Esumer2025**",
-        "role": "admin",
-        "name": "Paola Andrea Mejía"
-    },
-    "15437492": {
-        "password": "Esumer2025**",
-        "role": "admin",
-        "name": "Duvian Sanchez Gallego"
-    },
-    "1036397698": {
-        "password": "Esumer2025**",
-        "role": "admin",
-        "name": "Gloria María Ospina Cardona"
-    },
-    "1152209099": {
+    "1026148543": {
         "password": "Esumer2025**",
         "role": "admin",
         "name": "Melissa Soto Velez"
