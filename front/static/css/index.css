@@ -125,6 +125,7 @@ body {
 }
 
 .delete-icon {
+  margin-top: 8px;
   width: 25px;
   height: 25px;
   filter: invert(1);

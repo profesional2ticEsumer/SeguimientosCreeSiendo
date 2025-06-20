@@ -1,3 +1,4 @@
+import json
 import os
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import HTMLResponse
@@ -23,14 +24,29 @@ async def dashboard(request: Request):
     user_role = request.cookies.get("role")
     
     documents = []
-
+    
     for doc_dir in Path(DOCUMENTS_BASE_PATH).iterdir():
+        apellido = ""
+        
         if doc_dir.is_dir() and doc_dir.name.startswith("documento_") and doc_dir.name.endswith(f"_{user}"):
             # doc_number sin el prefijo y sin el sufijo del user
             base_name = doc_dir.name.replace("documento_", "")
             doc_number = base_name.rsplit("_", 1)[0]
             doc_adviser = base_name.rsplit("_", 1)[1]
+            
+            # Obtener apellido del archivo familia
+            apellido = ""
+            for file in doc_dir.iterdir():
+                if file.name.startswith("familia_") and file.name.endswith(".json"):
+                    with open(file, encoding="utf-8") as f:
+                        try:
+                            data = json.load(f)
+                            apellido = data.get("apellido", "")
+                        except:
+                            pass
+                    break
 
+            # Leer seguimientos
             seguimientos = []
             for item in os.listdir(doc_dir):
                 if item.startswith("seguimiento_"):
@@ -48,6 +64,7 @@ async def dashboard(request: Request):
             documents.append({
                 "doc_adviser": doc_adviser,
                 "doc_number": doc_number,
+                "apellido": apellido,
                 "seguimientos": seguimientos
             })
         elif user_role == "superadmin":
@@ -55,6 +72,18 @@ async def dashboard(request: Request):
             base_name = doc_dir.name.replace("documento_", "")
             doc_number = base_name.rsplit("_", 1)[0]
             doc_adviser = base_name.rsplit("_", 1)[1]
+            
+            # Obtener apellido del archivo familia
+            apellido = ""
+            for file in doc_dir.iterdir():
+                if file.name.startswith("familia_") and file.name.endswith(".json"):
+                    with open(file, encoding="utf-8") as f:
+                        try:
+                            data = json.load(f)
+                            apellido = data.get("apellido", "")
+                        except:
+                            pass
+                    break
 
             seguimientos = []
             for item in os.listdir(doc_dir):
@@ -73,6 +102,7 @@ async def dashboard(request: Request):
             documents.append({
                 "doc_adviser": doc_adviser,
                 "doc_number": doc_number,
+                "apellido": apellido,
                 "seguimientos": seguimientos
             })
 

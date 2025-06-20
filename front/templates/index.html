@@ -37,7 +37,7 @@
         <div class="family-section">
           <div class="family-content">
             <div class="family-id" onclick="toggleFollowUps('{{ familia }}', '{{ entrevistador }}')">
-              📋 {{ doc.doc_number }}
+              📋 {{ doc.doc_number }} - {{ doc.apellido }}
             </div>
             {% if user_role == 'superadmin' %}
             <div class="family-delete">
